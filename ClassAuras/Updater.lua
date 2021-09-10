@@ -39,3 +39,7 @@ function Updater:Constructor()
         self.oldGameTime = currentGameTime;
     end   
 end
+
+function Updater:Unload()
+    self:SetWantsUpdates(false)
+end

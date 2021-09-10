@@ -96,14 +96,7 @@ function BuffBar:AdjustBars()
 end
 
 function BuffBar:Unload()
-    self.FillBar:SetWidth(0)
-    self.duration = 0
-    self.maxDuration = 0
-
-    if self.active then Updater:UnSubscribe(self) end
-
-    self.FillBar:SetParent(nil)
-    self.BackgroundBar:SetParent(nil)
-    self:SetParent(nil)
-    self = nil
+    if self.active then
+        RemoveCallback(Updater, "Tick", self.UpdateHandler);
+    end
 end
