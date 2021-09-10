@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Plugin>
+	<Information>
+		<Name>ClassAuras</Name>
+		<Author>Exo</Author>
+		<Version>0.1</Version>
+	</Information>
+	<Package>ExoPlugins.ClassAuras.Main</Package>
+</Plugin>
