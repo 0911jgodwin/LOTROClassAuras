@@ -70,7 +70,7 @@ function BrawlerAuras:Constructor(parent)
 end
 
 function BrawlerAuras:ConfigureCallbacks() 
-	AddCallback(playerEffects, "EffectAdded", function(sender, args)
+	self.effectAddedCallback = AddCallback(playerEffects, "EffectAdded", function(sender, args)
 		local effect = playerEffects:Get(args.Index);
 		local effectName = effect:GetName();
 
@@ -85,7 +85,7 @@ function BrawlerAuras:ConfigureCallbacks()
 		end
 	end);
 
-	AddCallback(playerEffects, "EffectRemoved", function(sender, args)
+	self.effectRemovedCallback = AddCallback(playerEffects, "EffectRemoved", function(sender, args)
 		local effect = args.Effect;
 		if effect ~= nil then 
 			local effectName = effect:GetName();
@@ -106,6 +106,22 @@ function BrawlerAuras:ConfigureCallbacks()
         self.Callbacks[name] = {}
 
     end
+end
+
+function BrawlerAuras:RemoveCallbacks()
+	RemoveCallback(playerEffects, "EffectAdded", self.effectAddedCallback);
+	RemoveCallback(playerEffects, "EffectRemoved", self.effectRemovedCallback);
+	for key, value in pairs(self.Callbacks) do
+        for _, callback in pairs(value) do
+            RemoveCallback(self.SkillsTable[key], "ResetTimeChanged", callback);
+        end
+    end
+
+	self.ProcBar:Unload();
+end
+
+function BrawlerAuras:Unload()
+	self:RemoveCallbacks();
 end
 
 function BrawlerAuras:DragEnd()

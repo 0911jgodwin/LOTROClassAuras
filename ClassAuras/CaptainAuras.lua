@@ -15,8 +15,7 @@ function CaptainAuras:Constructor(parent)
 	self:SetVisible(true);
 
 	width = self:GetWidth();
-    self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
-	self.ProcBar:SetPosition(0, 0);
+    
 
 	self.SkillsTable = {};
 	self.Callbacks = {};
@@ -67,30 +66,22 @@ function CaptainAuras:Constructor(parent)
         ["Fighting Withdrawal"] = {"Fighting_Withdrawal", 32, 8},
 	};
 
+	self.EffectIDs = {};
+
+	self:ConfigureBars();
+	self:ConfigureCallbacks();
+	self.DragBar = Deusdictum.UI.DragBar( self, "Captain Auras" );
+end
+
+function CaptainAuras:ConfigureBars()
+	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ProcBar:SetPosition(0, 0);
 	self.PrimarySkillBar = SkillBar(self, width, 40, 38, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
 	self.PrimarySkillBar:SetPosition(0, 53+2);
 	self.SecondarySkillBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
 	self.SecondarySkillBar:SetPosition(0, 85+2);
 	self.CooldownBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, false);
 	self.CooldownBar:SetPosition(0, 113+2);
-
-	--[[
-	self.skill = Skill(self, 38, "Battle-shout", "Battle_Shout");
-	self.skill:SetPosition(0+2, 53);
-	self.skill = Skill(self, 38, "Improved Sure Strike", "Improved_Sure_Strike");
-	self.skill:SetPosition(38+2, 53);
-	self.skill = Skill(self, 38, "Grave Wound", "Grave_Wound");
-	self.skill:SetPosition(76+2, 53);
-	self.skill = Skill(self, 38, "Valiant Strike", "Valiant_Strike");
-	self.skill:SetPosition(114+2, 53);
-	self.skill = Skill(self, 38, "Inspire (Shield-brother)", "Inspire_(Song-brother)");
-	self.skill:SetPosition(152+2, 53);
-	self.skill = Skill(self, 38, "Gallant Display", "Gallant_Display");
-	self.skill:SetPosition(190+2, 53);
-	self.skill = Skill(self, 38, "Kick", "Kick");
-	self.skill:SetPosition(228+2, 53);
-	self.skill = Skill(self, 38, "Words of Courage", "Words_of_Courage");
-	self.skill:SetPosition(266+2, 53);]]--
 
 	for key, value in pairs(self.ProcTable) do
 		self.ProcBar:AddEffect(key, Effect(self.ProcBar, 32, value[1], value[3]), value[2]);
@@ -114,12 +105,6 @@ function CaptainAuras:Constructor(parent)
 	self.ReadiedBar=BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
 	self.HardenedBar=BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
 
-	--[[self.FocusBar:SetPosition(((width-6)/2)-((width-6)/6) + 1, 35);
-	self.PenetratingBar:SetPosition(((width-6)/2)+((width-6)/6) + 1, 35);
-	self.RallyBar:SetPosition(0, 35);
-	self.ReadiedBar:SetPosition(0, 44+2);
-	self.HardenedBar:SetPosition((width-6)/2 + 1, 44+2);]]--
-
 
 	self.RallyBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 , 35);
 	self.FocusBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth()), 35);
@@ -134,15 +119,10 @@ function CaptainAuras:Constructor(parent)
 		["Rousing Cry Damage Buff"] = self.RallyBar,
 		["Penetrating Cry Attack Speed Buff"] = self.PenetratingBar,	
 	};
-
-	self.EffectIDs = {};
-
-	self:ConfigureCallbacks();
-	self.DragBar = Deusdictum.UI.DragBar( self, "Captain Auras" );
 end
 
 function CaptainAuras:ConfigureCallbacks() 
-	AddCallback(playerEffects, "EffectAdded", function(sender, args)
+	self.effectAddedCallback = AddCallback(playerEffects, "EffectAdded", function(sender, args)
 		local effect = playerEffects:Get(args.Index);
 		local effectName = effect:GetName();
 
@@ -157,7 +137,7 @@ function CaptainAuras:ConfigureCallbacks()
 		end
 	end);
 
-	AddCallback(playerEffects, "EffectRemoved", function(sender, args)
+	self.effectRemovedCallback = AddCallback(playerEffects, "EffectRemoved", function(sender, args)
 		local effect = args.Effect;
 		if effect ~= nil then 
 			local effectName = effect:GetName();
@@ -199,6 +179,31 @@ function CaptainAuras:ConfigureCallbacks()
             end))
         end
     end
+end
+
+function CaptainAuras:RemoveCallbacks()
+	RemoveCallback(playerEffects, "EffectAdded", self.effectAddedCallback);
+	RemoveCallback(playerEffects, "EffectRemoved", self.effectRemovedCallback);
+	for key, value in pairs(self.Callbacks) do
+        for _, callback in pairs(value) do
+            RemoveCallback(self.SkillsTable[key], "ResetTimeChanged", callback);
+        end
+    end
+	self.RallyBar:Unload();
+	self.FocusBar:Unload();
+	self.PenetratingBar:Unload();
+	self.ReadiedBar:Unload();
+	self.HardenedBar:Unload();
+
+	self.ProcBar:Unload();
+	self.PrimarySkillBar:Unload();
+	self.SecondarySkillBar:Unload();
+	self.CooldownBar:Unload();
+end
+
+function CaptainAuras:Unload()
+	self:RemoveCallbacks();
+
 end
 
 function CaptainAuras:DragEnd()

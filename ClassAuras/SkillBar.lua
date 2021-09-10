@@ -66,22 +66,25 @@ function SkillBar:Constructor(parent, width, height, iconSize, alignment, showOf
 		end
 	end
 
-	self.UpdateHandler = function(delta)
-		if not self.showOffCD then
+	if not self.showOffCD then
+		self.UpdateHandler = function(delta)
 			for key, value in pairs(self.activeSkills) do
 				if self.skills[key]:Update(delta) then
-					Turbine.Shell.WriteLine("We got into this loop")
-					self.activeSkills[key] = false;
+					self.activeSkills[key] = nil;
 					self.activeCount = self.activeCount - 1;
 					self.skills[key]:SetVisible(false);
 					self.SortSkills();
+					Turbine.Shell.WriteLine(self.activeCount);
+					Turbine.Shell.WriteLine(key);
+					Turbine.Shell.WriteLine(delta);
 					if self.activeCount <= 0 then
 						RemoveCallback(Updater, "Tick", self.UpdateHandler);
 					end
 				end
-				
 			end
-		else
+		end
+	else
+		self.UpdateHandler = function(delta)
 			for key, value in pairs(self.activeSkills) do
 				self.skills[key]:Update(delta);
 			end
@@ -101,6 +104,7 @@ function SkillBar:AddSkill( name, skill, priority )
 end
 
 function SkillBar:TriggerCooldown (name, cooldown)
+Turbine.Shell.WriteLine(name)
 	if self.skills[name]:SetCooldown(cooldown) then
 		if self.activeSkills[name] then
 			return;
@@ -111,6 +115,7 @@ function SkillBar:TriggerCooldown (name, cooldown)
 			self.skills[name]:SetVisible(true);
 			self.SortSkills();
 		end
+		Turbine.Shell.WriteLine(self.activeCount);
 		if self.activeCount == 1 then
 			AddCallback(Updater, "Tick", self.UpdateHandler);
 		end
@@ -126,5 +131,11 @@ function SkillBar:TriggerCooldown (name, cooldown)
 				RemoveCallback(Updater, "Tick", self.UpdateHandler);
 			end
 		end
+	end
+end
+
+function SkillBar:Unload()
+	if self.activeCount > 0 then
+		RemoveCallback(Updater, "Tick", self.UpdateHandler);
 	end
 end

@@ -85,3 +85,9 @@ function EffectBar:SetInactive( name )
 		self.SortEffects();
 	end
 end
+
+function EffectBar:Unload()
+	if self.activeCount > 0 then
+		RemoveCallback(Updater, "Tick", self.UpdateHandler);
+	end
+end
