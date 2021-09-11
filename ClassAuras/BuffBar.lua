@@ -99,4 +99,9 @@ function BuffBar:Unload()
     if self.active then
         RemoveCallback(Updater, "Tick", self.UpdateHandler);
     end
+    self.BorderBox:SetParent(nil);
+    self.BackgroundBar:SetParent(nil);
+    self.FillBar:SetParent(nil);
+    self:SetParent(nil);
+    self = nil;
 end

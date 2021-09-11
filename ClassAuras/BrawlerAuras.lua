@@ -4,10 +4,10 @@ import "ExoPlugins.ClassAuras.Skill";
 import "ExoPlugins.ClassAuras.SkillBar";
 import "ExoPlugins.ClassAuras.ResourceBar";
 BrawlerAuras = class(Turbine.UI.Window)
-function BrawlerAuras:Constructor(parent)
+function BrawlerAuras:Constructor(parent, x, y)
     Turbine.UI.Window.Constructor(self)
     self:SetParent(parent);
-    self:SetPosition(200, 200);
+    self:SetPosition(x, y);
 
     --Due to the design of the bars, keep the width of this window as a multiple of 6 to avoid weird alignment issues.
     self:SetSize(312, 150);
@@ -64,6 +64,8 @@ function BrawlerAuras:Constructor(parent)
 	self.lastTier = "Endurance 1";
 
 	self.EffectIDs = {};
+
+	self.resetTime = nil;
 
     self:ConfigureCallbacks();
     self.DragBar = Deusdictum.UI.DragBar( self, "Brawler Auras" );
@@ -122,6 +124,11 @@ end
 
 function BrawlerAuras:Unload()
 	self:RemoveCallbacks();
+	SaveData = {
+		["aurasLeft"] = self:GetLeft(),
+		["aurasTop"] = self:GetTop(),
+	};
+	Turbine.PluginData.Save(Turbine.DataScope.Character, "AuraSettings", SaveData);
 end
 
 function BrawlerAuras:DragEnd()

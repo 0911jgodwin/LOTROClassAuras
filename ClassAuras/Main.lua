@@ -11,6 +11,29 @@ skillList = player:GetTrainedSkills();
 playerClass = player:GetClass();
 playerEffects = player:GetEffects();
 Updater = Updater();
+ChatHandler = Turbine.Chat;
+
+RefreshTools = function(f, args)
+	if args ~= nil then
+		if args.ChatType == Turbine.ChatType.Advancement then
+			local msg = string.find(args.Message, "You have acquired the Class Specialization Bonus Trait:");
+			if msg ~= nil then
+				Tools:Reload();
+			end
+		end
+	end
+end
+AddCallback(ChatHandler, "Received", RefreshTools);
+
+if Turbine.PluginData.Load(Turbine.DataScope.Character, "AuraSettings") ~= nil then
+
+	AuraSettings = Turbine.PluginData.Load(Turbine.DataScope.Character, "AuraSettings")
+else
+	AuraSettings = {}
+	AuraSettings["aurasLeft"] = 200;
+	AuraSettings["aurasTop"] = 200;
+end
+
 if playerClass == Turbine.Gameplay.Class.Beorning then
 	playerClass = "Beorning";
 	Turbine.Shell.WriteLine("Beorning");
@@ -18,15 +41,11 @@ elseif playerClass == Turbine.Gameplay.Class.Burglar then
 	Turbine.Shell.WriteLine("Burglar")
 elseif playerClass == Turbine.Gameplay.Class.Brawler then
 	import "ExoPlugins.ClassAuras.BrawlerAuras";
-	Turbine.Shell.WriteLine("Brawler")
 	Tools = BrawlerAuras(self);
 elseif playerClass == Turbine.Gameplay.Class.Captain then
-	Turbine.Shell.WriteLine("Captain")
 	import "ExoPlugins.ClassAuras.CaptainAuras";
 	playerClass = "Captain";
-	--TestEffect=Effect(self, 32, 1090553787);
-	Tools = CaptainAuras(self);
-	
+	Tools = CaptainAuras(self, AuraSettings["aurasLeft"], AuraSettings["aurasTop"]);
 elseif playerClass == Turbine.Gameplay.Class.Champion then
 	Turbine.Shell.WriteLine("Champion")
 elseif playerClass == Turbine.Gameplay.Class.Guardian then
@@ -44,6 +63,7 @@ elseif playerClass == Turbine.Gameplay.Class.Warden then
 end
 
 plugin.Unload=function()
+	RemoveCallback(ChatHandler, "Received", RefreshTools);
 	Tools:Unload();
 	Turbine.Shell.WriteLine("Unload Complete");
 end

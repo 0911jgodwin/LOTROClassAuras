@@ -11,13 +11,6 @@ function Skill:Constructor(parent, size, name, icon)
 
     self.duration = -1;
     self.currentTime = -1;
-
-
-    --Is this section still needed?
-    if self.skill ~= nil then
-        self.resetTime = self.skill:GetResetTime();
-        self.duration = self.resetTime - Turbine.Engine.GetGameTime();
-    end
     
     if size == 38 then
         self.iconString = "ExoPlugins/ClassAuras/Resources/Class/" .. playerClass .. "/38px/";
@@ -44,10 +37,18 @@ function Skill:Constructor(parent, size, name, icon)
 
     self.IconLabel = Turbine.UI.Label();
     self.IconLabel:SetParent(self.IconFrame);
-    --self.IconLabel:SetBackground(self.skill:GetSkillInfo():GetIconImageID());
     self.IconLabel:SetBackground(self.background);
     self.IconLabel:SetSize(size, size);
     self.IconLabel:SetPosition( -2, -4 );
+
+    self.Tint = Turbine.UI.Control();
+    self.Tint:SetParent( self );
+    self.Tint:SetBackColor( Turbine.UI.Color( 0.3, 0, 0, 0 ) );
+    self.Tint:SetBackColorBlendMode( Turbine.UI.BlendMode.Overlay );
+    self.Tint:SetPosition( 2, 4 );
+    self.Tint:SetSize( (size - math.ceil(size/16)) - 2, (size - math.ceil((size/16)*3) - 2) );
+    self.Tint:SetMouseVisible( false );
+    self.Tint:SetVisible(false);
 
     self.CooldownLabel = Turbine.UI.Label();
     self.CooldownLabel:SetParent(self);
@@ -64,6 +65,7 @@ function  Skill:Update( delta )
     if self.duration < 0 then
         self.CooldownLabel:SetVisible(false);
         self.IconLabel:SetBackground(self.background);
+        self.Tint:SetVisible(false);
         return true;
     end
 
@@ -100,5 +102,19 @@ function  Skill:SetCooldown( cooldown )
         self.CooldownLabel:SetText(self.currentTime);
     end
     self.IconLabel:SetBackground(self.grayscaleBackground);
+    self.Tint:SetVisible(true);
     return true;
+end
+
+function Skill:Unload()
+    self.background = nil;
+    self.grayscaleBackground = nil;
+
+    self.BlackBorder:SetParent( nil );
+    self.IconFrame:SetParent( nil );
+    self.IconLabel:SetParent(nil);
+    self.Tint:SetParent(nil);
+    self.CooldownLabel:SetParent(nil);
+    self:SetParent(nil);
+    self = nil;
 end

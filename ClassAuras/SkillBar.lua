@@ -74,9 +74,6 @@ function SkillBar:Constructor(parent, width, height, iconSize, alignment, showOf
 					self.activeCount = self.activeCount - 1;
 					self.skills[key]:SetVisible(false);
 					self.SortSkills();
-					Turbine.Shell.WriteLine(self.activeCount);
-					Turbine.Shell.WriteLine(key);
-					Turbine.Shell.WriteLine(delta);
 					if self.activeCount <= 0 then
 						RemoveCallback(Updater, "Tick", self.UpdateHandler);
 					end
@@ -104,7 +101,6 @@ function SkillBar:AddSkill( name, skill, priority )
 end
 
 function SkillBar:TriggerCooldown (name, cooldown)
-Turbine.Shell.WriteLine(name)
 	if self.skills[name]:SetCooldown(cooldown) then
 		if self.activeSkills[name] then
 			return;
@@ -115,7 +111,6 @@ Turbine.Shell.WriteLine(name)
 			self.skills[name]:SetVisible(true);
 			self.SortSkills();
 		end
-		Turbine.Shell.WriteLine(self.activeCount);
 		if self.activeCount == 1 then
 			AddCallback(Updater, "Tick", self.UpdateHandler);
 		end
@@ -138,4 +133,15 @@ function SkillBar:Unload()
 	if self.activeCount > 0 then
 		RemoveCallback(Updater, "Tick", self.UpdateHandler);
 	end
+
+	for key, value in pairs(self.activeSkills) do
+		self.skills[key]:Unload();
+	end
+	self.activeSkills = {};
+	self.activeCount = 0;
+	self.skills = {};
+	self.priority = {};
+	self.skillCount = 0;
+	self:SetParent(nil);
+	self = nil;
 end

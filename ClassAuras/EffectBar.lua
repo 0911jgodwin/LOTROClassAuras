@@ -90,4 +90,12 @@ function EffectBar:Unload()
 	if self.activeCount > 0 then
 		RemoveCallback(Updater, "Tick", self.UpdateHandler);
 	end
+	for key, value in pairs(self.effects) do
+		self.effects[key]:Unload();
+	end
+	self.effects = {};
+	self.priority = {};
+	self.activeEffects = {};
+	self:SetParent(nil);
+	self = nil;
 end

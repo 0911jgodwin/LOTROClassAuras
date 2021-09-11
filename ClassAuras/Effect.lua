@@ -8,6 +8,7 @@ function Effect:Constructor(parent, size, icon, stack)
 
     self.duration = -1;
     self.currentTime = -1;
+    self.stack = stack;
 
 
 	self.BlackBorder = Turbine.UI.Control();
@@ -82,4 +83,21 @@ end
 
 function Effect:StartTimer(timer)
     self.duration = timer;
+end
+
+function Effect:GetDuration()
+    return self.duration;
+end
+
+function Effect:Unload()
+    self.BlackBorder:SetParent( nil );
+    self.IconFrame:SetParent( nil );
+    self.IconLabel:SetParent(nil);
+    self.Tint:SetParent(nil);
+    self.DurationLabel:SetParent(nil);
+    if self.stack > 0 then
+        self.StackLabel:SetParent(nil);
+    end
+    self:SetParent(nil);
+    self = nil;
 end
