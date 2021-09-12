@@ -36,8 +36,13 @@ function CaptainAuras:Constructor(parent, x, y)
         ["Valour - Tier 3"] = {1091916299, 4, 4},
         ["Valour - Tier 4"] = {1091916299, 4, 5},
 		["Cutting Edge"] = {1090553775, 5, 0},
-		["Elendil's Boon"] = {1091840418, 6, 0},
 		["Master of War"] = {1091831459, 7, 0},
+	};
+
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <Skill to Highlight>
+	self.SkillHighlights = {
+		["Elendil's Boon"] = "Shadow's Lament",
 	};
 
 	--Data required for additional entries to these tables:
@@ -142,13 +147,19 @@ function CaptainAuras:ConfigureBars()
 
 	if self.role == 1 then
 		self.BarTable["Focus"] = self.StanceBar;
+		self.BarTable["Relentless Attack"] = nil;
+		self.BarTable["On Guard"] = nil;
 		self.CooldownSkills["To Arms (Shield-brother)"] = {"To_Arms_(Song-brother)", 32, 3};
 		self.PrimarySkills["Inspire (Shield-brother)"] = {"Inspire_(Song-brother)", 38, 5};
 	elseif self.role == 2 then
+		self.BarTable["On Guard"] = nil;
+		self.BarTable["Focus"] = nil;
 		self.BarTable["Relentless Attack"] = self.StanceBar;
 		self.CooldownSkills["To Arms (Shield-brother)"] = {"To_Arms_(Blade-brother)", 32, 3};
 		self.PrimarySkills["Inspire (Shield-brother)"] = {"Inspire_(Blade-brother)", 38, 5};
 	elseif self.role == 3 then
+		self.BarTable["Focus"] = nil;
+		self.BarTable["Relentless Attack"] = nil;
 		self.BarTable["On Guard"] = self.StanceBar;
 		self.CooldownSkills["To Arms (Shield-brother)"] = {"To_Arms", 32, 3};
 		self.PrimarySkills["Inspire (Shield-brother)"] = {"Inspire", 38, 5};
@@ -185,6 +196,15 @@ function CaptainAuras:ConfigureCallbacks()
 			self.EffectIDs[effectName] = effect:GetID();
 			self.BarTable[effectName]:SetTimer(effect:GetDuration());
 		end
+
+		if self.SkillHighlights[effectName] then
+			self.EffectIDs[effectName] = effect:GetID();
+			if self.PrimarySkills[self.SkillHighlights[effectName]] then
+				self.PrimarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], true);
+			elseif self.SecondarySkills[self.SkillHighlights[effectName]] then
+				self.SecondarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], true);
+			end
+		end
 	end);
 
 	self.effectRemovedCallback = AddCallback(playerEffects, "EffectRemoved", function(sender, args)
@@ -198,6 +218,14 @@ function CaptainAuras:ConfigureCallbacks()
 
 			if self.BarTable[effectName] and effect:GetID() == self.EffectIDs[effectName] then
 				self.BarTable[effectName]:EndTimer();
+			end
+
+			if self.SkillHighlights[effectName] == self.EffectIDs[effectName] then
+				if self.PrimarySkills[self.SkillHighlights[effectName]] then
+					self.PrimarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
+				elseif self.SecondarySkills[self.SkillHighlights[effectName]] then
+					self.SecondarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
+				end
 			end
 		end
 	end);
@@ -262,7 +290,7 @@ function CaptainAuras:GetRole()
         local name = item:GetSkillInfo():GetName();
 		if name == "Valiant Strike" then
 			return 1;
-		elseif name == "Shadows Lament" then
+		elseif name == "Shadow's Lament" then
 			return 2;
 		elseif name == "Threatening Shout" then
 			return 3;

@@ -49,6 +49,9 @@ elseif playerClass == Turbine.Gameplay.Class.Captain then
 elseif playerClass == Turbine.Gameplay.Class.Champion then
 	Turbine.Shell.WriteLine("Champion")
 elseif playerClass == Turbine.Gameplay.Class.Guardian then
+	import "ExoPlugins.ClassAuras.GuardianAuras";
+	playerClass = "Guardian";
+	Tools = GuardianAuras(self, AuraSettings["aurasLeft"], AuraSettings["aurasTop"]);
 	Turbine.Shell.WriteLine("Guardian")
 elseif playerClass == Turbine.Gameplay.Class.Hunter then
 	Turbine.Shell.WriteLine("Hunter")

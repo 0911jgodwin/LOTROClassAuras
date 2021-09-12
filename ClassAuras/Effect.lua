@@ -27,7 +27,7 @@ function Effect:Constructor(parent, size, icon, stack)
 
     self.Tint = Turbine.UI.Control();
     self.Tint:SetParent( self );
-    self.Tint:SetBackColor( Turbine.UI.Color( 0.3, 0, 0, 0 ) );
+    self.Tint:SetBackColor( Turbine.UI.Color( 0.2, 0, 0, 0 ) );
     self.Tint:SetBackColorBlendMode( Turbine.UI.BlendMode.Overlay );
     self.Tint:SetPosition( 2, 4 );
     self.Tint:SetSize( (size - math.ceil(size/16)) - 2, (size - math.ceil((size/16)*3) - 2) );

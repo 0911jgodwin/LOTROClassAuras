@@ -129,6 +129,12 @@ function SkillBar:TriggerCooldown (name, cooldown)
 	end
 end
 
+function SkillBar:ToggleHighlight (name, bool)
+	if self.skills[name] then
+		self.skills[name]:ToggleHighlight(bool);
+	end
+end
+
 function SkillBar:Unload()
 	if self.activeCount > 0 then
 		RemoveCallback(Updater, "Tick", self.UpdateHandler);

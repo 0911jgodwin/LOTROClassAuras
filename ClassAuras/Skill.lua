@@ -1,9 +1,7 @@
+import "ExoPlugins.ClassAuras.Highlight";
 Skill = class( Turbine.UI.Control )
 function Skill:Constructor(parent, size, name, icon)
 	Turbine.UI.Control.Constructor( self );
-
-	self.name = name;
-	self.skill = FindSkill( name );
 
     self:SetParent(parent);
     self:SetSize(size);
@@ -17,7 +15,7 @@ function Skill:Constructor(parent, size, name, icon)
     else
         self.iconString = "ExoPlugins/ClassAuras/Resources/Class/" .. playerClass .. "/32px/"
     end
-
+    Turbine.Shell.WriteLine(self.iconString);
     self.background = self.iconString .. icon .. ".tga";
     self.grayscaleBackground = self.iconString .. icon .. "_Grayscale.tga";
 
@@ -58,6 +56,13 @@ function Skill:Constructor(parent, size, name, icon)
     self.CooldownLabel:SetOutlineColor(Turbine.UI.Color(0,0,0));
     self.CooldownLabel:SetFontStyle(Turbine.UI.FontStyle.Outline);
     self.CooldownLabel:SetMouseVisible(false);
+
+
+    self.Highlight = Highlight(self, self.BlackBorder:GetWidth()+2, self.BlackBorder:GetHeight() + 4);
+end
+
+function Skill:ToggleHighlight( bool )
+    self.Highlight:Toggle(bool);
 end
 
 function  Skill:Update( delta )
