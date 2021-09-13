@@ -1,4 +1,4 @@
-Highlight = class(Turbine.UI.Control)
+Highlight = class(Turbine.UI.Window)
 function Highlight:Constructor(parent, frameWidth, frameHeight)
     Turbine.UI.Window.Constructor(self)
     self:SetParent(parent)
@@ -43,4 +43,12 @@ end
 function Highlight:Toggle(bool)
     self:SetVisible(bool);
     self:SetWantsUpdates(bool);
+end
+
+function Highlight:Unload()
+
+    self.ants:SetParent(nil);
+    self:SetWantsUpdates(false);
+    self:SetParent(nil);
+    self = nil;
 end

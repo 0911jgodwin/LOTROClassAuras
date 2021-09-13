@@ -135,6 +135,16 @@ function SkillBar:ToggleHighlight (name, bool)
 	end
 end
 
+function SkillBar:ToggleActive (name, bool, timer)
+	if self.skills[name] then
+		if timer ~= nil then
+			self.skills[name]:ToggleActive(bool, timer);
+		else
+			self.skills[name]:ToggleActive(bool);
+		end
+	end
+end
+
 function SkillBar:Unload()
 	if self.activeCount > 0 then
 		RemoveCallback(Updater, "Tick", self.UpdateHandler);

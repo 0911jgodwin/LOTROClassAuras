@@ -3,7 +3,7 @@
 	<Information>
 		<Name>ClassAuras</Name>
 		<Author>Exo</Author>
-		<Version>0.1</Version>
+		<Version>0.2</Version>
 	</Information>
 	<Package>ExoPlugins.ClassAuras.Main</Package>
 </Plugin>

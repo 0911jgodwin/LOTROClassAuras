@@ -10,7 +10,7 @@ function CaptainAuras:Constructor(parent, x, y)
     self:SetPosition(x, y);
 
 	--Due to the design of the bars, keep the width of this window as a multiple of 6 to avoid weird alignment issues.
-    self:SetSize(312, 300);
+    self:SetSize(312, 200);
     self:SetMouseVisible(false);
 	self:SetVisible(true);
 
@@ -220,7 +220,7 @@ function CaptainAuras:ConfigureCallbacks()
 				self.BarTable[effectName]:EndTimer();
 			end
 
-			if self.SkillHighlights[effectName] == self.EffectIDs[effectName] then
+			if self.SkillHighlights[effectName] and effect:GetID() == self.EffectIDs[effectName] then
 				if self.PrimarySkills[self.SkillHighlights[effectName]] then
 					self.PrimarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
 				elseif self.SecondarySkills[self.SkillHighlights[effectName]] then

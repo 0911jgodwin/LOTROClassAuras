@@ -26,8 +26,7 @@ end
 AddCallback(ChatHandler, "Received", RefreshTools);
 
 if Turbine.PluginData.Load(Turbine.DataScope.Character, "AuraSettings") ~= nil then
-
-	AuraSettings = Turbine.PluginData.Load(Turbine.DataScope.Character, "AuraSettings")
+	AuraSettings = Turbine.PluginData.Load(Turbine.DataScope.Character, "AuraSettings");
 else
 	AuraSettings = {}
 	AuraSettings["aurasLeft"] = 200;

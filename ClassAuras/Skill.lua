@@ -1,6 +1,6 @@
 import "ExoPlugins.ClassAuras.Highlight";
 Skill = class( Turbine.UI.Control )
-function Skill:Constructor(parent, size, name, icon)
+function Skill:Constructor(parent, size, name, icon, responsive)
 	Turbine.UI.Control.Constructor( self );
 
     self:SetParent(parent);
@@ -15,9 +15,16 @@ function Skill:Constructor(parent, size, name, icon)
     else
         self.iconString = "ExoPlugins/ClassAuras/Resources/Class/" .. playerClass .. "/32px/"
     end
-    Turbine.Shell.WriteLine(self.iconString);
+
     self.background = self.iconString .. icon .. ".tga";
     self.grayscaleBackground = self.iconString .. icon .. "_Grayscale.tga";
+    self.tempBackground = self.background;
+
+    self.active = true;
+    if responsive ~= nil then
+        self.active = false;
+        self.background = self.grayscaleBackground;
+    end
 
 	self.BlackBorder = Turbine.UI.Control();
     self.BlackBorder:SetParent( self );
@@ -46,7 +53,7 @@ function Skill:Constructor(parent, size, name, icon)
     self.Tint:SetPosition( 2, 4 );
     self.Tint:SetSize( (size - math.ceil(size/16)) - 2, (size - math.ceil((size/16)*3) - 2) );
     self.Tint:SetMouseVisible( false );
-    self.Tint:SetVisible(false);
+    self.Tint:SetVisible(not self.active);
 
     self.CooldownLabel = Turbine.UI.Label();
     self.CooldownLabel:SetParent(self);
@@ -59,10 +66,40 @@ function Skill:Constructor(parent, size, name, icon)
 
 
     self.Highlight = Highlight(self, self.BlackBorder:GetWidth()+2, self.BlackBorder:GetHeight() + 4);
+
+    self.UpdateHandler = function(delta)
+		self.activeTime = self.activeTime - delta;
+
+        if self.activeTime < 0 then
+            self.activeTime = nil;
+            self:ToggleActive(false);
+            RemoveCallback(Updater, "Tick", self.UpdateHandler);
+        end
+	end
 end
 
 function Skill:ToggleHighlight( bool )
     self.Highlight:Toggle(bool);
+end
+
+function Skill:ToggleActive( bool, timer )
+    self.active = bool;
+    if self.active then
+        self.background = self.tempBackground;
+        if self.duration < 0 then
+            self.IconLabel:SetBackground(self.background);
+            self.Tint:SetVisible(not self.active);
+        end
+    else
+        self.background = self.grayscaleBackground;
+        self.IconLabel:SetBackground(self.background);
+        self.Tint:SetVisible(not self.active);
+    end
+
+    if timer ~= nil then
+        self.activeTime = timer;
+        AddCallback(Updater, "Tick", self.UpdateHandler);
+    end
 end
 
 function  Skill:Update( delta )
@@ -70,7 +107,7 @@ function  Skill:Update( delta )
     if self.duration < 0 then
         self.CooldownLabel:SetVisible(false);
         self.IconLabel:SetBackground(self.background);
-        self.Tint:SetVisible(false);
+        self.Tint:SetVisible(not self.active);
         return true;
     end
 
@@ -115,11 +152,16 @@ function Skill:Unload()
     self.background = nil;
     self.grayscaleBackground = nil;
 
+    if self.active ~= nil then
+        RemoveCallback(Updater, "Tick", self.UpdateHandler);
+    end
+
     self.BlackBorder:SetParent( nil );
     self.IconFrame:SetParent( nil );
     self.IconLabel:SetParent(nil);
     self.Tint:SetParent(nil);
     self.CooldownLabel:SetParent(nil);
+    self.Highlight:Unload();
     self:SetParent(nil);
     self = nil;
 end
