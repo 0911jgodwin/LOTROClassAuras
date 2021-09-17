@@ -4,20 +4,17 @@ function Highlight:Constructor(parent, frameWidth, frameHeight)
     self:SetParent(parent)
     self:SetMouseVisible(false);
 
-    self:SetOpacity(0.8)
-
     --Highlighting is done via Marching Ants animation--
 
 
-    self:SetPosition(1, 2)
+    self:SetPosition(0, 2)
 
     --Set the base size to whatever the dimensions are for the individual ant frames
-    self:SetSize(50, 42);
-    self:SetPosition(0, 2);
+    self:SetSize(49, 40);
 
     --Set the frameCount to however many frames your animation is
     self.frameCount = 60;
-    self.antsTexture = "ExoPlugins/ClassAuras/Resources/MarchingAntsGold.tga";
+    self.antsTexture = "ExoPlugins/ClassAuras/Resources/MarchingAnts.tga";
 
     self.ants = Turbine.UI.Control();
     self.ants:SetParent(self);
@@ -28,7 +25,7 @@ function Highlight:Constructor(parent, frameWidth, frameHeight)
     self.ants:SetMouseVisible(false);
 
     self:SetStretchMode(1);
-    self:SetSize(frameWidth, frameHeight);
+    self:SetSize(frameWidth + 2, frameHeight +2);
 
     self.currentFrame = 0;
     self.lastTick = Turbine.Engine.GetGameTime();

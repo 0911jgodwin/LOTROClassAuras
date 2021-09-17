@@ -83,6 +83,11 @@ end
 
 function Effect:StartTimer(timer)
     self.duration = timer;
+    if self.duration > 100 then
+        self.DurationLabel:SetVisible(false);
+    else 
+        self.DurationLabel:SetVisible(true);
+    end
 end
 
 function Effect:GetDuration()

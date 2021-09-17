@@ -45,50 +45,56 @@ function CaptainAuras:Constructor(parent, x, y)
 		["Elendil's Boon"] = "Shadow's Lament",
 	};
 
+	--This table basically just holds the icon size information for each row.
+	--If you want to make a particular row of quickslots large just adjust the value for the given row index
+	self.RowInfo = {
+		[1] = 38,
+		[2] = 32,
+		[3] = 38,
+	};
+
 	--Data required for additional entries to these tables:
-	--[<Skill Name>] = {<image filepath>, <icon size>, <priority>}
-	self.PrimarySkills = {
-		["Battle-shout"] = {"Battle_Shout", 38, 1},
-		["Improved Sure Strike"] = {"Improved_Sure_Strike", 38, 2},
-		["Grave Wound"] = {"Grave_Wound", 38, 3},
-		["Valiant Strike"] = {"Valiant_Strike", 38, 4},
-		["Shadow's Lament"] = {"Shadow's_Lament", 38, 4},
-        ["Threatening Shout"] = {"Threatening_Shout", 38, 4},
-		["Inspire (Shield-brother)"] = {"Inspire_(Song-brother)", 38, 5},
-		["Gallant Display"] = {"Gallant_Display", 38, 6},
-		["Kick"] = {"Kick", 38, 7},
-		["Words of Courage"] = {"Words_of_Courage", 38, 8},
-	};
+	--[<Skill Name>] = {<image>, <x position>, <y position>, <responsive>, <visible off CD>}
+	--Responsive skills are those that are not always available, they may require you to progress through a skill chain to unlock
+	--for example in order to unlock Retaliation on Guardian you need a parry response effect to be active, therefore Retaliation is responsive.
+	self.Skills = {
+		["Battle-shout"] = {1090541075, 1, 1, false, true},
+		["Improved Sure Strike"] = {1091659757, 2, 1, false, true},
+		["Grave Wound"] = {1091659758, 3, 1, false, true},
+		["Valiant Strike"] = {1091463400, 4, 1, false, true},
+		["Shadow's Lament"] = {1091476094, 4, 1, false, true},
+        ["Threatening Shout"] = {1091831472, 4, 1, false, true},
+		["Inspire (Shield-brother)"] = {1091037681, 5, 1, false, true},
+		["Gallant Display"] = {1091829784, 6, 1, false, true},
+		["Kick"] = {1091037684, 7, 1, false, true},
+		["Words of Courage"] = {1090553779, 8, 1, false, true},
 
-	self.SecondarySkills = {
-		["Devastating Blow"] = {"Devastating_Blow", 32, 1},
-        ["Pressing Attack"] = {"Pressing_Attack", 32, 2},
-        ["Improved Cutting Attack"] = {"Improved_Cutting_Attack", 32, 3},
-        ["Improved Blade of Elendil"] = {"Blade_of_Elendil", 32, 4},
-        ["Cleanse Corruption"] = {"Cleanse_Corruption", 32, 5},
-        ["Rallying Cry"] = {"Rallying_Cry", 32, 6},
-        ["Routing Cry"] = {"Routing_Cry", 32, 7},
-        ["Muster Courage"] = {"Muster_Courage", 32, 8},
-		["Elendil's Roar"] = {"Elendil's_Roar", 32, 9},
-	};
+		["Devastating Blow"] = {1090541118, 1, 2, false, true},
+        ["Pressing Attack"] = {1090553778, 2, 2, false, true},
+        ["Improved Cutting Attack"] = {1091659767, 3, 2, false, true},
+        ["Improved Blade of Elendil"] = {1091155262, 4, 2, false, true},
+        ["Cleanse Corruption"] = {1091478590, 5, 2, false, true},
+        ["Rallying Cry"] = {1090541065, 6, 2, false, true},
+        ["Routing Cry"] = {1090541073, 7, 2, false, true},
+        ["Muster Courage"] = {1090541084, 8, 2, false, true},
+		["Elendil's Roar"] = {1090541120, 9, 2, false, true},
 
-	self.CooldownSkills = {
-		["Reform the Lines!"] = {"Reform_the_Lines!", 32, 1},
-        ["Standard of Honour"] = {"Standard_of_Honour", 32, 2},
-		["Standard of Valour"] = {"Standard_of_Valour", 32, 2},
-		["Standard of War"] = {"Standard_of_War", 32, 2},
-        ["To Arms (Shield-brother)"] = {"To_Arms_(Song-brother)", 32, 3},
-        ["Song-brother's Call"] = {"Song-brother's_Call", 32, 4},
-		["Shield-brother's Call"] = {"Shield-brother's_Call", 32, 4},
-        ["Blade-brother's Call"] = {"Blade-brother's_Call", 32, 4},
-        ["Make Haste"] = {"Make_Haste", 32, 5},
-        ["Time of Need"] = {"Time_of_Need", 32, 6},
-        ["Cry Vengeance"] = {"Cry_of_Vengeance", 32, 7},
-        ["Fighting Withdrawal"] = {"Fighting_Withdrawal", 32, 8},
-		["Last Stand"] = {"Last_Stand", 32, 9},
-        ["Shield of the Dúnedain"] = {"Shield_of_the_Dunedain", 32, 10},
-        ["In Harm's Way"] = {"In_Harm's_Way", 32, 11},
-        ["Oathbreaker's Shame"] = {"Oathbreaker's_Shame", 32, 12},
+		["Reform the Lines!"] = {1091829785, 1, 3, false, false},
+        ["Standard of Honour"] = {1091829788, 2, 3, false, false},
+		["Standard of Valour"] = {1091829786, 2, 3, false, false},
+		["Standard of War"] = {1091829787, 2, 3, false, false},
+        ["To Arms (Shield-brother)"] = {1091659765, 3, 3, false, false},
+        ["Song-brother's Call"] = {1091831453, 4, 3, false, false},
+		["Shield-brother's Call"] = {1091831458, 4, 3, false, false},
+        ["Blade-brother's Call"] = {1091840431, 4, 3, false, false},
+        ["Make Haste"] = {1090533151, 5, 3, false, false},
+        ["Time of Need"] = {1091037688, 6, 3, false, false},
+        ["Cry Vengeance"] = {1091787648, 7, 3, false, false},
+        ["Fighting Withdrawal"] = {1091037686, 8, 3, false, false},
+		["Last Stand"] = {1090533270, 9, 3, false, false},
+        ["Shield of the Dúnedain"] = {1091926678, 10, 3, false, false},
+        ["In Harm's Way"] = {1091926677, 11, 3, false, false},
+        ["Oathbreaker's Shame"] = {1090533154, 12, 3, false, false},
 	};
 
 	self.resetTime = nil;
@@ -118,12 +124,8 @@ end
 function CaptainAuras:ConfigureBars()
 	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
 	self.ProcBar:SetPosition(0, 0);
-	self.PrimarySkillBar = SkillBar(self, width, 40, 38, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
-	self.PrimarySkillBar:SetPosition(0, 53+2);
-	self.SecondarySkillBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
-	self.SecondarySkillBar:SetPosition(0, 85+2);
-	self.CooldownBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, false);
-	self.CooldownBar:SetPosition(0, 113+2);
+	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, 3, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
+	self.SkillBar:SetPosition(0, 55);
 
 	self.RallyBar=BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
 	self.PenetratingBar=BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
@@ -149,20 +151,20 @@ function CaptainAuras:ConfigureBars()
 		self.BarTable["Focus"] = self.StanceBar;
 		self.BarTable["Relentless Attack"] = nil;
 		self.BarTable["On Guard"] = nil;
-		self.CooldownSkills["To Arms (Shield-brother)"] = {"To_Arms_(Song-brother)", 32, 3};
-		self.PrimarySkills["Inspire (Shield-brother)"] = {"Inspire_(Song-brother)", 38, 5};
+		self.Skills["To Arms (Shield-brother)"][1] = 1091659766;
+		self.Skills["Inspire (Shield-brother)"][1] = 1091659761;
 	elseif self.role == 2 then
 		self.BarTable["On Guard"] = nil;
 		self.BarTable["Focus"] = nil;
 		self.BarTable["Relentless Attack"] = self.StanceBar;
-		self.CooldownSkills["To Arms (Shield-brother)"] = {"To_Arms_(Blade-brother)", 32, 3};
-		self.PrimarySkills["Inspire (Shield-brother)"] = {"Inspire_(Blade-brother)", 38, 5};
+		self.Skills["To Arms (Shield-brother)"][1] = 1091037682;
+		self.Skills["Inspire (Shield-brother)"][1] = 1091659762;
 	elseif self.role == 3 then
 		self.BarTable["Focus"] = nil;
 		self.BarTable["Relentless Attack"] = nil;
 		self.BarTable["On Guard"] = self.StanceBar;
-		self.CooldownSkills["To Arms (Shield-brother)"] = {"To_Arms", 32, 3};
-		self.PrimarySkills["Inspire (Shield-brother)"] = {"Inspire", 38, 5};
+		self.Skills["To Arms (Shield-brother)"][1] = 1091659765;
+		self.Skills["Inspire (Shield-brother)"][1] = 1091037681;
 	end
 
 	for key, value in pairs(self.ProcTable) do
@@ -172,12 +174,8 @@ function CaptainAuras:ConfigureBars()
 	for i = 1, skillList:GetCount(), 1 do
         local name = skillList:GetItem(i):GetSkillInfo():GetName();
 
-		if self.PrimarySkills[name] then
-			self.PrimarySkillBar:AddSkill(name, Skill(self.PrimarySkillBar, self.PrimarySkills[name][2], name, self.PrimarySkills[name][1]), self.PrimarySkills[name][3]);
-		elseif self.SecondarySkills[name] then
-			self.SecondarySkillBar:AddSkill(name, Skill(self.SecondarySkillBar, self.SecondarySkills[name][2], name, self.SecondarySkills[name][1]), self.SecondarySkills[name][3]);
-		elseif self.CooldownSkills[name] then
-			self.CooldownBar:AddSkill(name, Skill(self.CooldownBar, self.CooldownSkills[name][2], name, self.CooldownSkills[name][1]), self.CooldownSkills[name][3]);
+		if self.Skills[name] then
+			self.SkillBar:AddSkill(name, Skill(self.SkillBar, self.RowInfo[self.Skills[name][3]], self.Skills[name][1], self.Skills[name][4] , self.Skills[name][5]), self.Skills[name][2], self.Skills[name][3] );
 		end
 	end
 end
@@ -199,10 +197,8 @@ function CaptainAuras:ConfigureCallbacks()
 
 		if self.SkillHighlights[effectName] then
 			self.EffectIDs[effectName] = effect:GetID();
-			if self.PrimarySkills[self.SkillHighlights[effectName]] then
-				self.PrimarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], true);
-			elseif self.SecondarySkills[self.SkillHighlights[effectName]] then
-				self.SecondarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], true);
+			if self.Skills[self.SkillHighlights[effectName]] then
+				self.SkillBar:ToggleHighlight(self.SkillHighlights[effectName], true);
 			end
 		end
 	end);
@@ -221,10 +217,8 @@ function CaptainAuras:ConfigureCallbacks()
 			end
 
 			if self.SkillHighlights[effectName] and effect:GetID() == self.EffectIDs[effectName] then
-				if self.PrimarySkills[self.SkillHighlights[effectName]] then
-					self.PrimarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
-				elseif self.SecondarySkills[self.SkillHighlights[effectName]] then
-					self.SecondarySkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
+				if self.Skills[self.SkillHighlights[effectName]] then
+					self.SkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
 				end
 			end
 		end
@@ -233,29 +227,17 @@ function CaptainAuras:ConfigureCallbacks()
 	for i = 1, skillList:GetCount(), 1 do
         local item = skillList:GetItem(i);
         local name = item:GetSkillInfo():GetName();
+		local ID = item:GetSkillInfo():GetIconImageID();
 		
-        self.Callbacks[name] = {}
+        self.Callbacks[name] = {};
 
-        if self.PrimarySkills[name] then
+        if self.Skills[name] then
             self.SkillsTable[name] = item
             table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.PrimarySkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+                self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
             end))
         end
 
-		if self.SecondarySkills[name] then
-            self.SkillsTable[name] = item
-            table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.SecondarySkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-            end))
-        end
-
-		if self.CooldownSkills[name] then
-            self.SkillsTable[name] = item
-            table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.CooldownBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-            end))
-        end
     end
 end
 
@@ -274,9 +256,7 @@ function CaptainAuras:RemoveCallbacks()
 	self.HardenedBar:Unload();
 
 	self.ProcBar:Unload();
-	self.PrimarySkillBar:Unload();
-	self.SecondarySkillBar:Unload();
-	self.CooldownBar:Unload();
+	self.SkillBar:Unload();
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};

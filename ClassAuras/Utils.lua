@@ -62,9 +62,19 @@ function FindSkill( name )
 end
 
 function SecondsToMinutes(time)
-    local seconds = (time % 60);
-    if seconds < 10 then
-        seconds = "0" .. seconds;
+    local timeString = "";
+    local seconds = 0;
+    local minutes = 0;
+    if time <= 60 then
+        timeString = time;
+    else
+        seconds = (time % 60);
+        minutes = math.floor(time / 60);
+        if seconds < 10 then
+            seconds = "0" .. seconds;
+        end
+        timeString = minutes .. ":" .. seconds;
     end
-    return math.floor(time/60) .. ":"..seconds;
+
+    return timeString;
 end

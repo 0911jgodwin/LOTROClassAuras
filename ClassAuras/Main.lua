@@ -40,7 +40,7 @@ elseif playerClass == Turbine.Gameplay.Class.Burglar then
 	Turbine.Shell.WriteLine("Burglar")
 elseif playerClass == Turbine.Gameplay.Class.Brawler then
 	import "ExoPlugins.ClassAuras.BrawlerAuras";
-	Tools = BrawlerAuras(self);
+	Tools = BrawlerAuras(self, AuraSettings["aurasLeft"], AuraSettings["aurasTop"]);
 elseif playerClass == Turbine.Gameplay.Class.Captain then
 	import "ExoPlugins.ClassAuras.CaptainAuras";
 	playerClass = "Captain";
@@ -51,6 +51,7 @@ elseif playerClass == Turbine.Gameplay.Class.Guardian then
 	import "ExoPlugins.ClassAuras.GuardianAuras";
 	playerClass = "Guardian";
 	Tools = GuardianAuras(self, AuraSettings["aurasLeft"], AuraSettings["aurasTop"]);
+	
 	Turbine.Shell.WriteLine("Guardian")
 elseif playerClass == Turbine.Gameplay.Class.Hunter then
 	Turbine.Shell.WriteLine("Hunter")

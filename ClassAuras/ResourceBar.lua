@@ -9,12 +9,14 @@ function ResourceBar:Constructor(parent, width, height, pipCount, colours)
 
     self.colours = colours;
 
-    --Default settings, change this at some point
-    self.colours = {
+    --Example settings. Requires a value stored at 0 to be the default colour, other values are break points that tell it to switch to a new colour
+    --In this example 0-2 pips are blue, 3-8 pips are yellow, and 9 pips display as red.
+
+    --[[self.colours = {
     [0] = Turbine.UI.Color(0.23, 0.12, 0.77),
     [3] = Turbine.UI.Color( 1.00, 0.96, 0.41 ),
     [9] = Turbine.UI.Color(0.77, 0.12, 0.23),
-    };
+    };]]--
 
     self.pipCount = pipCount;
     self.Pips = {};

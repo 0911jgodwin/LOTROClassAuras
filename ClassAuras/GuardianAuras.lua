@@ -28,6 +28,19 @@ function GuardianAuras:Constructor(parent, x, y)
 	self.Callbacks = {};
 	self.EffectIDs = {};
 
+	--This table basically just holds the icon size information for each row.
+	--If you want to make a particular row of quickslots large just adjust the value for the given row index
+	self.RowInfo = {
+		[1] = 38,
+		[2] = 32,
+		[3] = 32,
+		[4] = 38,
+	};
+	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ProcBar:SetPosition(0, 0);
+	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, 4, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
+	self.SkillBar:SetPosition(0, 51);
+
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
 	self.ProcTable = {
@@ -40,45 +53,43 @@ function GuardianAuras:Constructor(parent, x, y)
 		["Elendil's Boon"] = "Shadow's Lament",
 	};
 
+
 	--Data required for additional entries to these tables:
-	--[<Skill Name>] = {<image filepath>, <icon size>, <priority>}
-	self.PrimarySkills = {
-		["Improved Sting"] = {"Sting", 38, 1},
-		["Guardian's Ward"] = {"Guardian's_Ward", 38, 2},
-		["Vexing Blow"] = {"Vexing_Blow", 38, 3},
-		["Sweeping Cut"] = {"Sweeping_Cut", 38, 4},
-		["Shield-blow"] = {"Shield-blow", 38, 5},
-		["War-chant"] = {"War-chant", 38, 6},
-		["Stamp"] = {"Stamp", 38, 7},
-		["Stagger"] = {"Stagger", 38, 8},
-	};
+	--[<Skill Name>] = {<image>, <x position>, <y position>, <responsive>, <visible off CD>}
+	--Responsive skills are those that are not always available, they may require you to progress through a skill chain to unlock
+	--for example in order to unlock Retaliation on Guardian you need a parry response effect to be active, therefore Retaliation is responsive.
+	self.Skills = {
+		["Improved Sting"] = {1090541160, 1, 1, false, true},
+		["Guardian's Ward"] = {1090540663, 2, 1, false, true},
+		["Vexing Blow"] = {1090541171, 3, 1, false, true},
+		["Sweeping Cut"] = {1090553893, 4, 1, false, true},
+		["Shield-blow"] = {1090541166, 5, 1, false, true},
+		["War-chant"] = {1091805310, 6, 1, false, true},
+		["Stamp"] = {1090553906, 7, 1, false, true},
+		["Stagger"] = {1091415788, 8, 1, false, true},
 
-	self.SecondarySkills = {
-		["Fray the Edge"] = {"Fray_the_Edge", 32, 1},
-		["Retaliation"] = {"Retaliation", 32, 2},
-		["Whirling Retaliation"] = {"Whirling_Retaliation", 32, 3},
-		["Turn the Tables"] = {"Turn_the_Tables", 32, 4},
-		["Ignore the Pain"] = {"Ignore_the_Pain", 32, 5},
-		["Shield-swipe"] = {"Shield-swipe", 32, 6},
-		["Shield-taunt"] = {"Shield-taunt", 32, 7},
-		["Bash"] = {"Bash", 32, 8},
-		["Shield-smash"] = {"Shield-smash", 32, 9},
-	};
+		["Fray the Edge"] = {1091415791, 1, 2, false, true},
+		["Retaliation"] = {1090553896, 2, 2, true, true},
+		["Whirling Retaliation"] = {1090553902, 3, 2, true, true},
+		["Turn the Tables"] = {1090553907, 4, 2, false, true},
+		["Ignore the Pain"] = {1091591836, 5, 2, false, true},
+		["Shield-swipe"] = {1090541162, 6, 2, true, true},
+		["Shield-taunt"] = {1090553905, 7, 2, true, true},
+		["Bash"] = {1090553898, 8, 2, true, true},
+		["Shield-smash"] = {1090540658, 9, 2, true, true},
 
-	self.TertiarySkills = {
-		["Engage"] = {"Engage", 32, 1},
-		["Redirect"] = {"Redirect", 32, 2},
-		["Catch a Breath"] = {"Catch_a_Breath", 32, 3},
-		["Smashing Stab"] = {"Smashing_Stab", 32, 4},
-		["Challenge"] = {"Challenge", 32, 5},
-	};
+		["Engage"] = {1091415793, 1, 3, false, true},
+		["Redirect"] = {1091805300, 2, 3, true, true},
+		["Catch a Breath"] = {1090541168, 3, 3, true, true},
+		["Smashing Stab"] = {1091805247, 4, 3, true, true},
+		["Challenge"] = {1090522264, 5, 3, false, true},
 
-	self.CooldownSkills = {
-		["Guardian's Pledge"] = {"Guardian's_Pledge", 32, 1},
-		["Juggernaut"] = {"Juggernaut", 32, 2},
-		["Litany of Defiance"] = {"Litany_of_Defiance", 32, 3},
-		["Warrior's Heart"] = {"Warrior's_Heart", 32, 4},
-		["Thrill of Danger"] = {"Thrill_of_Danger", 32, 5},
+		["Guardian's Pledge"] = {1091805278, 1, 4, false, false},
+		["Juggernaut"] = {1091805299, 2, 4, false, false},
+		["Litany of Defiance"] = {1091444826, 3, 4, false, false},
+		["Warrior's Heart"] = {1090541182, 4, 4, false, false},
+		["Thrill of Danger"] = {1090541184, 5, 4, false, false},
+		["Break Ranks"] = {1091805247, 6, 4, false, false},
 	};
 
 	self.Fortifications = {
@@ -135,58 +146,51 @@ end
 function GuardianAuras:HandleResponseState( effect, bool )
 	if effect == "Block Response" then
 		self.blockResponse = bool;
-		self.SecondarySkillBar:ToggleActive("Shield-swipe", bool);
+		self.SkillBar:ToggleActive("Shield-swipe", bool);
 	elseif effect == "Parry Response" then
 		self.parryResponse = bool;
-		self.SecondarySkillBar:ToggleActive("Retaliation", bool);
-		self.SecondarySkillBar:ToggleActive("Whirling Retaliation", bool);
+		self.SkillBar:ToggleActive("Retaliation", bool);
+		self.SkillBar:ToggleActive("Whirling Retaliation", bool);
 	elseif effect == "Retaliation" then
 		self.retaliation = bool;
-		self.TertiarySkillBar:ToggleActive("Redirect", bool);
+		self.SkillBar:ToggleActive("Redirect", bool);
 	elseif effect == "Shield Swipe" then
 		self.shieldSwipe = bool;
-		self.SecondarySkillBar:ToggleActive("Shield-taunt", bool);
-		self.SecondarySkillBar:ToggleActive("Bash", bool);
+		self.SkillBar:ToggleActive("Shield-taunt", bool);
+		self.SkillBar:ToggleActive("Bash", bool);
 	end
 	
 	--Handle Catch a Breath
 	if self.blockResponse or self.parryResponse then
-		self.TertiarySkillBar:ToggleActive("Catch a Breath", true);
+		self.SkillBar:ToggleActive("Catch a Breath", true);
 	else
-		self.TertiarySkillBar:ToggleActive("Catch a Breath", false);
+		self.SkillBar:ToggleActive("Catch a Breath", false);
 	end
 
 	--Handle Smashing Stab
 	if self.retaliation and self.shieldSwipe then
-		self.TertiarySkillBar:ToggleActive("Smashing Stab", true);
-		self.TertiarySkillBar:ToggleHighlight("Smashing Stab", true);
+		self.SkillBar:ToggleActive("Smashing Stab", true);
+		self.SkillBar:ToggleHighlight("Smashing Stab", true);
 	elseif self.retaliation or self.shieldSwipe then
-		self.TertiarySkillBar:ToggleActive("Smashing Stab", true);
-		self.TertiarySkillBar:ToggleHighlight("Smashing Stab", false);
+		self.SkillBar:ToggleActive("Smashing Stab", true);
+		self.SkillBar:ToggleHighlight("Smashing Stab", false);
 	else
-		self.TertiarySkillBar:ToggleActive("Smashing Stab", false);
-		self.TertiarySkillBar:ToggleHighlight("Smashing Stab", false);
+		self.SkillBar:ToggleActive("Smashing Stab", false);
+		self.SkillBar:ToggleHighlight("Smashing Stab", false);
 	end
 end
 
 function GuardianAuras:ConfigureBars()
-	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
-	self.ProcBar:SetPosition(0, 0);
-	self.PrimarySkillBar = SkillBar(self, width, 40, 38, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
-	self.PrimarySkillBar:SetPosition(0, 55);
-	self.SecondarySkillBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
-	self.SecondarySkillBar:SetPosition(0, 87);
-	self.TertiarySkillBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, true);
-	self.TertiarySkillBar:SetPosition(0, 115);
-	self.CooldownBar = SkillBar(self, width, 40, 32, Turbine.Turbine.UI.ContentAlignment.MiddleCenter, false);
-	self.CooldownBar:SetPosition(0, 145);
 
 	for key, value in pairs(self.ProcTable) do
 		self.ProcBar:AddEffect(key, Effect(self.ProcBar, 32, value[1], value[3]), value[2]);
 	end
 
 	if self.role == 1 then
-		self.fortBar = ResourceBar(self, width, 24, 5);
+		self.colours = {
+			[0] = Turbine.UI.Color(0.23, 0.12, 0.77),
+			};
+		self.fortBar = ResourceBar(self, width, 24, 5, self.colours);
 		self.fortBar:SetPosition(0, 35);
 		self.fortBar:SetTotal(0);
 		self.lastTier = "";
@@ -195,30 +199,12 @@ function GuardianAuras:ConfigureBars()
 	for i = 1, skillList:GetCount(), 1 do
         local name = skillList:GetItem(i):GetSkillInfo():GetName();
 
-		if self.PrimarySkills[name] then
-			if self.ChainSkills[name] ~= nil then
-				self.PrimarySkillBar:AddSkill(name, Skill(self.PrimarySkillBar, self.PrimarySkills[name][2], name, self.PrimarySkills[name][1], false), self.PrimarySkills[name][3]);
-			else
-				self.PrimarySkillBar:AddSkill(name, Skill(self.PrimarySkillBar, self.PrimarySkills[name][2], name, self.PrimarySkills[name][1]), self.PrimarySkills[name][3]);
-			end
-		elseif self.SecondarySkills[name] then
-			if self.ChainSkills[name] ~= nil then
-				self.SecondarySkillBar:AddSkill(name, Skill(self.SecondarySkillBar, self.SecondarySkills[name][2], name, self.SecondarySkills[name][1], false), self.SecondarySkills[name][3]);
-			else
-				self.SecondarySkillBar:AddSkill(name, Skill(self.SecondarySkillBar, self.SecondarySkills[name][2], name, self.SecondarySkills[name][1]), self.SecondarySkills[name][3]);
-			end
-		elseif self.TertiarySkills[name] then
-			if self.ChainSkills[name] ~= nil then
-				self.TertiarySkillBar:AddSkill(name, Skill(self.TertiarySkillBar, self.TertiarySkills[name][2], name, self.TertiarySkills[name][1], false), self.TertiarySkills[name][3]);
-			else
-				self.TertiarySkillBar:AddSkill(name, Skill(self.TertiarySkillBar, self.TertiarySkills[name][2], name, self.TertiarySkills[name][1]), self.TertiarySkills[name][3]);
-			end
-		elseif self.CooldownSkills[name] then
-			self.CooldownBar:AddSkill(name, Skill(self.CooldownBar, self.CooldownSkills[name][2], name, self.CooldownSkills[name][1]), self.CooldownSkills[name][3]);
+		if self.Skills[name] then
+			self.SkillBar:AddSkill(name, Skill(self.SkillBar, self.RowInfo[self.Skills[name][3]], self.Skills[name][1], self.Skills[name][4] , self.Skills[name][5]), self.Skills[name][2], self.Skills[name][3] );
 		end
 	end
 
-	self.CooldownBar:AddSkill("Break Ranks", Skill(self.CooldownBar, 32, "Break Ranks", "Break_Ranks"), 0);
+	self.SkillBar:AddSkill("Break Ranks", Skill(self.SkillBar, self.RowInfo[self.Skills["Break Ranks"][3]], self.Skills["Break Ranks"][1], self.Skills["Break Ranks"][4] , self.Skills["Break Ranks"][5]), self.Skills["Break Ranks"][2], self.Skills["Break Ranks"][3] );
 end
 
 function GuardianAuras:ConfigureCallbacks() 
@@ -243,7 +229,11 @@ function GuardianAuras:ConfigureCallbacks()
 		end
 
 		if effectName == "Break Ranks" then
-			self.CooldownBar:TriggerCooldown("Break Ranks", 60);
+			self.SkillBar:TriggerCooldown("Break Ranks", 60);
+		end
+
+		if effectName == "Guardian's Ward Tactics" then 
+			self.SkillBar:ToggleHighlight("Guardian's Ward", false);
 		end
 	end);
 
@@ -265,7 +255,7 @@ function GuardianAuras:ConfigureCallbacks()
 			end
 
 			if effectName == "Guardian's Ward Tactics" and effect:GetID() == self.EffectIDs[effectName] then 
-				self.PrimarySkillBar:ToggleHighlight("Guardian's Ward", true);
+				self.SkillBar:ToggleHighlight("Guardian's Ward", true);
 			end
 		end
 	end);
@@ -273,43 +263,18 @@ function GuardianAuras:ConfigureCallbacks()
 	for i = 1, skillList:GetCount(), 1 do
         local item = skillList:GetItem(i);
         local name = item:GetSkillInfo():GetName();
+		local ID = item:GetSkillInfo():GetIconImageID();
+
+		Turbine.Shell.WriteLine(name .. " : " .. ID);
 		
         self.Callbacks[name] = {}
 
-        if self.PrimarySkills[name] then
-            self.SkillsTable[name] = item
+		if self.Skills[name] then
+			self.SkillsTable[name] = item
             table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.PrimarySkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown());
-            end))
-        end
-
-		if self.SecondarySkills[name] then
-            self.SkillsTable[name] = item
-			if name == "Bash" or name == "Shield-taunt" then
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SecondarySkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown());
-					self.SecondarySkillBar:ToggleActive("Shield-smash", true, 5);
-				end))
-			else
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SecondarySkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown());
-				end))
-			end
-        end
-
-		if self.TertiarySkills[name] then
-            self.SkillsTable[name] = item
-            table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.TertiarySkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown());
-            end))
-        end
-
-		if self.CooldownSkills[name] then
-            self.SkillsTable[name] = item
-            table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.CooldownBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown());
-            end))
-        end
+                self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+            end));
+		end
     end
 end
 
