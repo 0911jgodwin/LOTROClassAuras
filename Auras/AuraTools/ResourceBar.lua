@@ -1,4 +1,4 @@
-ResourceBar = class( Turbine.UI.Control );
+_G.ResourceBar = class( Turbine.UI.Control );
 function ResourceBar:Constructor(parent, width, height, pipCount, colours)
     Turbine.UI.Control.Constructor( self );
     self:SetParent(parent);
@@ -36,10 +36,6 @@ function ResourceBar:Constructor(parent, width, height, pipCount, colours)
     self.image:SetPosition(width/2-10, 6);
     self.image:SetStretchMode(2);
     self.image:SetMouseVisible(false);
-    
-
-
-    self:SetTotal(5);
 end
 
 function ResourceBar:SetTotal(total)
@@ -68,6 +64,16 @@ function ResourceBar:SetImage(total)
     self.image:SetBackground("ExoPlugins/ClassAuras/Resources/" .. total .. ".tga");
     self.image:SetStretchMode(1);
     self.image:SetSize(18, 18)
+end
+
+function ResourceBar:Unload()
+    for i = 1, self.pipCount, 1 do
+        self.Pips[i]:Unload();
+    end
+
+    self.Pips = {};
+    self:SetParent(nil);
+	self = nil;
 end
 
 Pip = class( Turbine.UI.Control );
@@ -99,4 +105,9 @@ end
 
 function Pip:SetInactive()
     self.BackgroundBar:SetBackColor(Turbine.UI.Color(0.75, 0.025, 0.025, 0.025));
+end
+
+function Pip:Unload()
+    self:SetParent(nil);
+	self = nil;
 end

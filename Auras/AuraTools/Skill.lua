@@ -1,5 +1,4 @@
-import "ExoPlugins.ClassAuras.Highlight";
-Skill = class( Turbine.UI.Control )
+_G.Skill = class( Turbine.UI.Control )
 function Skill:Constructor(parent, size, icon, responsive, display)
 	Turbine.UI.Control.Constructor( self );
 
@@ -24,21 +23,21 @@ function Skill:Constructor(parent, size, icon, responsive, display)
     self.BlackBorder:SetParent( self );
     self.BlackBorder:SetBackColor( Turbine.UI.Color( 1, 0, 0, 0 ) );
     self.BlackBorder:SetPosition( 1, 3 );
-    self.BlackBorder:SetSize( 32 - math.ceil(size/16), 32 - math.ceil((32/16)*3) );
+    self.BlackBorder:SetSize( 32 - math.ceil(32/16), 32 - math.ceil((32/16)*3) );
     self.BlackBorder:SetMouseVisible( false );
 
     self.IconFrame = Turbine.UI.Control();
     self.IconFrame:SetParent( self.BlackBorder );
     self.IconFrame:SetBackColor( Turbine.UI.Color( 1, 0, 0, 0 ) );
     self.IconFrame:SetPosition( 1, 1 );
-    self.IconFrame:SetSize( (32 - math.ceil(size/16)) - 2, (32 - math.ceil((32/16)*3) - 2) );
+    self.IconFrame:SetSize( (32 - math.ceil(32/16)) - 2, (32 - math.ceil((32/16)*3) - 2) );
     self.IconFrame:SetMouseVisible( false );
 
     self.IconLabel = Turbine.UI.Label();
     self.IconLabel:SetParent(self.IconFrame);
     self.IconLabel:SetBackground(self.background);
     self.IconLabel:SetSize(32, 32);
-    self.IconLabel:SetPosition( -2, -4 );
+    self.IconLabel:SetPosition( -math.floor(32/16), -math.floor((32/16)*3) );
     self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
     self.IconLabel:SetBlendMode(7);
     self.IconLabel:SetBackColorBlendMode(1);

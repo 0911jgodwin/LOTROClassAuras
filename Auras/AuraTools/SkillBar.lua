@@ -1,4 +1,4 @@
-SkillBar = class( Turbine.UI.Control );
+_G.SkillBar = class( Turbine.UI.Control );
 function SkillBar:Constructor(parent, width, height, rowInfo, rowCount, alignment)
 	Turbine.UI.Control.Constructor( self );
 

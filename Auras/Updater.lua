@@ -25,7 +25,7 @@ function Updater:Constructor()
     self.Update = function()
         local currentGameTime = Turbine.Engine.GetGameTime();
         if currentGameTime == self.oldGameTime then
-            return(true);
+            return;
         end
 
         local delta = currentGameTime - self.oldGameTime;

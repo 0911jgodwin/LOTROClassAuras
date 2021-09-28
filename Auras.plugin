@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<Plugin>
+	<Information>
+		<Name>Auras</Name>
+		<Author>Exo</Author>
+		<Version>0.5</Version>
+		<Description>Auras is a plugin that aims to drastically improve the visual clarity of various class procs, effects, resources, and cooldowns.
+
+
+This plugin is comprised of 3 key features:
+- The proc bar, which can be configured to display the tier/cooldown of any active effect.
+- The skill bar, which displays the various skills and their cooldowns.
+- The class specific resource bar, which can store a variety of things ranging from specialised buff timers to class-specific resources such as Mettle, Fervour, or Focus.
+
+
+The auras created by this plugin can be moved with whatever shortcut you use to unlock the vanilla UI. 
+
+Settings are saved at the character level, if you wish to import the settings from one character to another simply locate the AurasSettings.plugindata file at found within the "PluginData\[AccountName]\[ServerName]\[CharacterName]" folder and copy it to the second character.
+
+Skill bar/proc bar options are saved on a per spec basis, each spec can have its own tailored configuration.
+
+
+Plugin Discord: https://discord.gg/6CQWNeKxVN
+		</Description>
+		<Image>Exoplugins/Auras/Resources/PluginIcon.tga</Image>
+	</Information>
+	<Package>ExoPlugins.Auras.Main</Package>
+</Plugin>

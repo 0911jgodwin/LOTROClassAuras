@@ -1,9 +1,5 @@
-import "Deusdictum.UI";
-import "ExoPlugins.ClassAuras.BuffBar";
-import "ExoPlugins.ClassAuras.Skill";
-import "ExoPlugins.ClassAuras.SkillBar";
-import "ExoPlugins.ClassAuras.ResourceBar";
-BrawlerAuras = class(Turbine.UI.Window)
+import "ExoPlugins.Auras.AuraTools";
+_G.BrawlerAuras = class(Turbine.UI.Window)
 function BrawlerAuras:Constructor(parent, x, y)
     Turbine.UI.Window.Constructor(self)
     self:SetParent(parent);
@@ -24,8 +20,15 @@ function BrawlerAuras:Constructor(parent, x, y)
 	self.ProcBar:SetPosition(0, 0);
 
 	self.colours = {
-    [0] = Turbine.UI.Color(0.23, 0.12, 0.77),
-    [3] = Turbine.UI.Color( 1.00, 0.96, 0.41 ),
+    [0] = Turbine.UI.Color(1.00, 0.96, 0.41),
+	[1] = Turbine.UI.Color(0.97, 0.87, 0.39),
+	[2] = Turbine.UI.Color(0.95, 0.77, 0.37),
+	[3] = Turbine.UI.Color(0.92, 0.68, 0.35),
+	[4] = Turbine.UI.Color(0.90, 0.59, 0.33),
+	[5] = Turbine.UI.Color(0.87, 0.49, 0.31),
+	[6] = Turbine.UI.Color(0.85, 0.40, 0.29),
+	[7] = Turbine.UI.Color(0.82, 0.31, 0.27),
+    [8] = Turbine.UI.Color(0.80, 0.21, 0.25),
     [9] = Turbine.UI.Color(0.77, 0.12, 0.23),
     };
 
@@ -58,8 +61,8 @@ function BrawlerAuras:Constructor(parent, x, y)
 		["Innate Strength: Finesse - Tier 2"] = {1090539704, 3, 2},
 		["Innate Strength: Finesse - Tier 3"] = {1090539704, 3, 3},
 		["Innate Strength: Finesse - Tier 4"] = {1090539704, 3, 4},
-		["Feint"] = {1092693208, 4, 0},
-		["Get Serious"] = {1092628691, 5, 0},
+		--["Feint"] = {1092693208, 4, 0},
+		--["Get Serious"] = {1092628691, 5, 0},
 	};
 
 	--Data required for additional entries to these tables:
@@ -70,27 +73,32 @@ function BrawlerAuras:Constructor(parent, x, y)
 		["Low Strike"] = {1092595470, 1, 1, false, true},
 		["Sinister Cross"] = {1092595471, 2, 1, false, true},
 		["Dextrous Hook"] = {1092595472, 3, 1, false, true},
-		["Pummel"] = {1092598112, 4, 1, false, true},
-		["Shattering Fist"] = {1092598120, 5, 1, false, true},
-		["Mighty Upheaval"] = {1092598109, 6, 1, false, true},
-		["Strike Towards the Sky"] = {1092686889, 7, 1, false, true},
-		["Overhand Smash"] = {1092598116, 8, 1, false, true},
-
-		["Get Serious"] = {1092628691, 1, 2, false, true},
+		["Shattering Fist"] = {1092598120, 4, 1, false, true},
+		["Backhand Clout"] = {1092598117, 5, 1, false, true},
+		["Strike Towards the Sky"] = {1092686889, 6, 1, false, true},
+		["Hurl Object"] = {1092687520, 7, 1, false, true},
+		["Fulgurant Strike"] = {1091509864, 8, 1, false, true},
+		
+		["Quick Feint"] = {1092598114, 1, 2, false, true},
 		["First Strike"] = {1091805264, 2, 2, false, true},
-		["Get Serious"] = {1092628691, 3, 2, false, true},
-		["Get Serious"] = {1092628691, 4, 2, false, true},
-		["Get Serious"] = {1092628691, 5, 2, false, true},
-		["Quick Feint"] = {1092598114, 7, 2, false, true},
-		["Get Serious"] = {1092628691, 8, 2, false, true},
-
+		["Overhand Smash"] = {1092598116, 3, 2, false, true},
+		["Pummel"] = {1092598112, 4, 2, false, true},
+		["Knee Strike"] = {1092598108 , 5, 2, false, true},
+		["Helm-crusher"] = {1092685337, 6, 2, false, true},
+		["Helm's Hammer"] = {1092598113, 7, 2, false, true},
+		["Mighty Upheaval"] = {1092598109, 8, 2, false, true},
+		["Fist of the Valar"] = {1092695530, 9, 2, false, true},
+		["Get Serious"] = {1092628691, 10, 2, false, true},
+		
 		["Follow Me!"] = {1092686890, 1, 3, false, false},
 		["Strike as One!"] = {1091831431, 2, 3, false, false},
 		["Joy of Battle - Damage"] = {1091463400, 3, 3, false, false},
 		["Battle Fury"] = {1092638683, 4, 3, false, false},
-		["Share Innate Strength: Quickness"] = {1092687522, 5, 3}, false, false,
-		["One for All"] = {1091805278, 6, 3, false, false},
-		["Weather Blows"] = {1090541178, 7, 3, false, false},
+		["Share Innate Strength: Quickness"] = {1092687522, 5, 3, false, false},
+		["Share Innate Strength: Heavy"] = {1092687523, 6, 3, false, false},
+		["Share Innate Strength: Balance"] = {1092687524, 7, 3, false, false},
+		["One for All"] = {1091805278, 8, 3, false, false},
+		["Weather Blows"] = {1090541178, 9, 3, false, false},
 	};
 
 	--This table basically just holds the icon size information for each row.
@@ -160,8 +168,7 @@ function BrawlerAuras:ConfigureCallbacks()
         local item = skillList:GetItem(i);
         local name = item:GetSkillInfo():GetName();
 		local ID = item:GetSkillInfo():GetIconImageID();
-
-		--Turbine.Shell.WriteLine(name .. " : " .. ID);
+		Turbine.Shell.WriteLine(name .. " : " .. ID);
 
 
         self.Callbacks[name] = {}

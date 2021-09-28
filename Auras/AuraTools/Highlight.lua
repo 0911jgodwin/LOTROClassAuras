@@ -1,4 +1,4 @@
-Highlight = class(Turbine.UI.Window)
+_G.Highlight = class(Turbine.UI.Window)
 function Highlight:Constructor(parent, frameWidth, frameHeight)
     Turbine.UI.Window.Constructor(self)
     self:SetParent(parent)
@@ -14,7 +14,7 @@ function Highlight:Constructor(parent, frameWidth, frameHeight)
 
     --Set the frameCount to however many frames your animation is
     self.frameCount = 60;
-    self.antsTexture = "ExoPlugins/ClassAuras/Resources/MarchingAnts.tga";
+    self.antsTexture = "ExoPlugins/Auras/Resources/MarchingAnts.tga";
 
     self.ants = Turbine.UI.Control();
     self.ants:SetParent(self);

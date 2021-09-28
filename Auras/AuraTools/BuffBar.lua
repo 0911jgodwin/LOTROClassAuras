@@ -1,4 +1,4 @@
-BuffBar = class( Turbine.UI.Control );
+_G.BuffBar = class( Turbine.UI.Control );
 function BuffBar:Constructor(parent, width, height, barColour, alignment)
     Turbine.UI.Control.Constructor( self );
     self:SetParent(parent);
@@ -12,7 +12,7 @@ function BuffBar:Constructor(parent, width, height, barColour, alignment)
     
     self.oldWidth = -1;
 
-    Background = "ExoPlugins/ClassAuras/Resources/BarTexture.tga";
+    Background = "ExoPlugins/Auras/Resources/BarTexture.tga";
 
     --The border of the bar. Padding is built in to the size of the bar so we can easily align multiple bars.
     self.BorderBox = Turbine.UI.Control();

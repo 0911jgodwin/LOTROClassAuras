@@ -1,4 +1,4 @@
-EffectBar = class(Turbine.UI.Control)
+_G.EffectBar = class(Turbine.UI.Control)
 function EffectBar:Constructor( parent, width, height, alignment )
 	Turbine.UI.Control.Constructor(self);
     self:SetParent(parent);

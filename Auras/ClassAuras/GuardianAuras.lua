@@ -1,8 +1,5 @@
-import "Deusdictum.UI";
-import "ExoPlugins.ClassAuras.Skill";
-import "ExoPlugins.ClassAuras.SkillBar";
-import "ExoPlugins.ClassAuras.ResourceBar";
-GuardianAuras = class(Turbine.UI.Window)
+import "ExoPlugins.Auras.AuraTools";
+_G.GuardianAuras = class(Turbine.UI.Window)
 function GuardianAuras:Constructor(parent, x, y)
     Turbine.UI.Window.Constructor(self)
 

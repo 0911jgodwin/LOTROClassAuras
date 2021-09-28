@@ -1,4 +1,4 @@
-Effect = class(Turbine.UI.Control);
+_G.Effect = class(Turbine.UI.Control);
 function Effect:Constructor(parent, size, icon, stack)
 	Turbine.UI.Control.Constructor(self);
 
