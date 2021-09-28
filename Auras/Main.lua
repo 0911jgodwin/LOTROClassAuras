@@ -4,6 +4,7 @@ import "Turbine.UI.Lotro";
 import "ExoPlugins.Auras.Updater";
 import "ExoPlugins.Auras.Utils";
 import "ExoPlugins.Auras.Options";
+import "ExoPlugins.Auras.Commands";
 
 --Setup all the global objects we need reference to
 player = Turbine.Gameplay.LocalPlayer.GetInstance();
@@ -27,6 +28,12 @@ Options = _G.OptionsMaster();
 plugin.GetOptionsPanel = function(self) return Options; end	
 
 ChatHandler = Turbine.Chat;
+DoThis = function(sender, args)
+	Turbine.PluginManager.ShowOptions(Plugins["Auras"])
+end
+Turbine.Shell.AddCommand("auras", DoThis);
+
+
 
 ReloadHandler = function(delta)
 	if resetTime ~= nil then
@@ -115,4 +122,6 @@ plugin.Unload=function()
 	Options:Unload();
 	SaveData(Turbine.DataScope.Character, "ClassAuraSettings", Settings);
 	Turbine.Shell.WriteLine("Unload Complete");
+	Turbine.Shell.RemoveCommand("auras");
+	Turbine.Shell.RemoveCommand("Auras");
 end
