@@ -30,7 +30,7 @@ function ResourceBar:Constructor(parent, width, height, pipCount, colours)
     self.image:SetParent(self);
     self.image:SetSize(51, 51);
     
-    self.image:SetBackground("ExoPlugins/ClassAuras/Resources/0.tga");
+    self.image:SetBackground("ExoPlugins/Auras/Resources/0.tga");
     self.image:SetStretchMode(1);
     self.image:SetSize(18, 18)
     self.image:SetPosition(width/2-10, 6);
@@ -61,7 +61,7 @@ function ResourceBar:SetImage(total)
     --Due to poor choice of fonts within the system and no capability to import fonts this plugin uses custom images for each number.
     self.image:SetStretchMode(0);
     self.image:SetSize(51, 51);
-    self.image:SetBackground("ExoPlugins/ClassAuras/Resources/" .. total .. ".tga");
+    self.image:SetBackground("ExoPlugins/Auras/Resources/" .. total .. ".tga");
     self.image:SetStretchMode(1);
     self.image:SetSize(18, 18)
 end

@@ -33,10 +33,6 @@ function GuardianAuras:Constructor(parent, x, y)
 		[3] = 32,
 		[4] = 38,
 	};
-	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
-	self.ProcBar:SetPosition(0, 0);
-	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, 4, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 51);
 
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
@@ -47,7 +43,7 @@ function GuardianAuras:Constructor(parent, x, y)
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = <Skill to Highlight>
 	self.SkillHighlights = {
-		["Elendil's Boon"] = "Shadow's Lament",
+		--["Elendil's Boon"] = "Shadow's Lament",
 	};
 
 
@@ -97,18 +93,6 @@ function GuardianAuras:Constructor(parent, x, y)
 		["Improved Fortification V"] = 5,
 	};
 
-	self.ChainSkills = {
-		["Retaliation"] = true,
-		["Whirling Retaliation"] = true,
-		["Shield-swipe"] = true,
-		["Shield-taunt"] = true,
-		["Bash"] = true,
-		["Shield-smash"] = true,
-		["Redirect"] = true,
-		["Catch a Breath"] = true,
-		["Smashing Stab"] = true,
-	};
-
 	self.ChainEffects = {
 		["Block Response"] = true,
 		["Parry Response"] = true,
@@ -116,28 +100,11 @@ function GuardianAuras:Constructor(parent, x, y)
 		["Shield Swipe"] = true,
 	};
 
-	self.resetTime = nil;
-	self.ReloadHandler = function(delta)
-			if self.resetTime ~= nil then
-				if self.resetTime < Turbine.Engine.GetGameTime() then
-					skillList = player:GetTrainedSkills();
-					self:RemoveCallbacks();
-					self.role = self:GetRole();
-					self:ConfigureBars();
-					self:ConfigureCallbacks();
-					self.resetTime = nil;
-					RemoveCallback(Updater, "Tick", self.ReloadHandler);
-				end
-			else
-				self.resetTime = Turbine.Engine.GetGameTime()+3;
-			end
-	end
-
 	self.role = self:GetRole();
 	self:ConfigureBars();
 	self:ConfigureCallbacks();
 
-	self.DragBar = Deusdictum.UI.DragBar( self, "Guardian Auras" );
+	self.DragBar = DragBar( self, "Guardian Auras" );
 end
 
 function GuardianAuras:HandleResponseState( effect, bool )
@@ -151,6 +118,8 @@ function GuardianAuras:HandleResponseState( effect, bool )
 	elseif effect == "Retaliation" then
 		self.retaliation = bool;
 		self.SkillBar:ToggleActive("Redirect", bool);
+		self.SkillBar:ToggleActive("Thrust", bool);
+		self.SkillBar:ToggleActive("Overwhelm", bool);
 	elseif effect == "Shield Swipe" then
 		self.shieldSwipe = bool;
 		self.SkillBar:ToggleActive("Shield-taunt", bool);
@@ -179,11 +148,30 @@ end
 
 function GuardianAuras:ConfigureBars()
 
+	self:SetPosition(Settings["General"]["Position"][1], Settings["General"]["Position"][2]);
+
+    self:SetSize(Settings["General"]["Width"], 200);
+	width = self:GetWidth();
+
+	self.RowInfo = Settings["Class"][playerRole]["Skills"]["RowInfo"];
+	self.Skills = Settings["Class"][playerRole]["Skills"]["SkillData"];
+	self.ProcTable = Settings["Class"][playerRole]["Procs"];
+
+	local rowCount = 0;
+	for key, value in pairs(self.RowInfo) do
+		rowCount = rowCount + 1;
+	end
+
+	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ProcBar:SetPosition(0, 0);
+	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
+	self.SkillBar:SetPosition(0, 51);
+
 	for key, value in pairs(self.ProcTable) do
 		self.ProcBar:AddEffect(key, Effect(self.ProcBar, 32, value[1], value[3]), value[2]);
 	end
 
-	if self.role == 1 then
+	if playerRole == 1 then
 		self.colours = {
 			[0] = Turbine.UI.Color(0.23, 0.12, 0.77),
 			};
@@ -193,15 +181,33 @@ function GuardianAuras:ConfigureBars()
 		self.lastTier = "";
 	end
 
-	for i = 1, skillList:GetCount(), 1 do
-        local name = skillList:GetItem(i):GetSkillInfo():GetName();
 
-		if self.Skills[name] then
-			self.SkillBar:AddSkill(name, Skill(self.SkillBar, self.RowInfo[self.Skills[name][3]], self.Skills[name][1], self.Skills[name][4] , self.Skills[name][5]), self.Skills[name][2], self.Skills[name][3] );
+	if Settings["General"]["ShowSkills"] then
+		for i = 1, skillList:GetCount(), 1 do
+			local name = skillList:GetItem(i):GetSkillInfo():GetName();
+
+			
+
+			if Settings["General"]["Debug"] then
+				Debug("Skill Name: " .. name .. " | Skill Icon: " .. skillList:GetItem(i):GetSkillInfo():GetIconImageID());
+			end
+
+			if self.Skills[name] then
+				self.SkillBar:AddSkill(name, Skill(self.SkillBar, self.RowInfo[self.Skills[name][3]], self.Skills[name][1], self.Skills[name][4] , self.Skills[name][5]), self.Skills[name][2], self.Skills[name][3] );
+			end
+		end
+
+		if playerRole == 1 then
+			self.SkillBar:AddSkill("Break Ranks", 
+				Skill(self.SkillBar, 
+					self.RowInfo[self.Skills["Break Ranks"][3]], 
+					self.Skills["Break Ranks"][1], 
+					self.Skills["Break Ranks"][4], 
+					self.Skills["Break Ranks"][5]), 
+					self.Skills["Break Ranks"][2], 
+					self.Skills["Break Ranks"][3]);
 		end
 	end
-
-	self.SkillBar:AddSkill("Break Ranks", Skill(self.SkillBar, self.RowInfo[self.Skills["Break Ranks"][3]], self.Skills["Break Ranks"][1], self.Skills["Break Ranks"][4] , self.Skills["Break Ranks"][5]), self.Skills["Break Ranks"][2], self.Skills["Break Ranks"][3] );
 end
 
 function GuardianAuras:ConfigureCallbacks() 
@@ -210,6 +216,10 @@ function GuardianAuras:ConfigureCallbacks()
 		local effectName = effect:GetName();
 
 		self.EffectIDs[effectName] = effect:GetID();
+
+		if Settings["General"]["Debug"] then
+			Debug("Effect added: " .. effectName .. " | Effect Icon: " .. effect:GetIcon());
+		end
 
 		if self.ChainEffects[effectName] ~= nil then
 			self:HandleResponseState(effectName, true);
@@ -262,15 +272,27 @@ function GuardianAuras:ConfigureCallbacks()
         local name = item:GetSkillInfo():GetName();
 		local ID = item:GetSkillInfo():GetIconImageID();
 
-		Turbine.Shell.WriteLine(name .. " : " .. ID);
 		
         self.Callbacks[name] = {}
 
 		if self.Skills[name] then
-			self.SkillsTable[name] = item
-            table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-            end));
+			self.SkillsTable[name] = item;
+
+			if name == "Bash" or name == "Shield-taunt" then
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+					self.SkillBar:ToggleActive("Shield-smash", true, 5);
+				end));
+			elseif name == "Thrust" or name == "Overwhelm" then
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+					self.SkillBar:ToggleActive("To the King", true, 5);
+				end));
+			else
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+				end));
+			end
 		end
     end
 end
@@ -284,11 +306,13 @@ function GuardianAuras:RemoveCallbacks()
         end
     end
 
+	if self.fortBar ~= nil then
+		self.fortBar:Unload();
+		self.fortBar = nil;
+	end
+
 	self.ProcBar:Unload();
-	self.PrimarySkillBar:Unload();
-	self.SecondarySkillBar:Unload();
-	self.TertiarySkillBar:Unload();
-	self.CooldownBar:Unload();
+	self.SkillBar:Unload();
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};
@@ -313,13 +337,18 @@ end
 
 function GuardianAuras:Unload()
 	self:RemoveCallbacks();
-	SaveData = {
-		["aurasLeft"] = self:GetLeft(),
-		["aurasTop"] = self:GetTop(),
+	Data = {
+		[1] = self:GetLeft(),
+		[2] = self:GetTop(),
 	};
-	Turbine.PluginData.Save(Turbine.DataScope.Character, "AuraSettings", SaveData)
+
+	Settings["General"]["Position"] = Data;
 end
 
 function GuardianAuras:Reload()
-	AddCallback(Updater, "Tick", self.ReloadHandler);
+	skillList = player:GetTrainedSkills();
+	self:RemoveCallbacks();
+	self.role = self:GetRole();
+	self:ConfigureBars();
+	self:ConfigureCallbacks();
 end

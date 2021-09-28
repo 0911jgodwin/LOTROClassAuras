@@ -17,8 +17,8 @@ Updater = Updater();
 Settings = nil;
 
 
-if Turbine.PluginData.Load(Turbine.DataScope.Character, "ClassAuraSettings") ~= nil then
-	Settings = LoadData(Turbine.DataScope.Character, "ClassAuraSettings");
+if Turbine.PluginData.Load(Turbine.DataScope.Character, "AurasSettings") ~= nil then
+	Settings = LoadData(Turbine.DataScope.Character, "AurasSettings");
 else
 	import "ExoPlugins.Auras.DefaultSettings";
 	Settings = ConfigureDefaultSettings();
@@ -28,17 +28,12 @@ Options = _G.OptionsMaster();
 plugin.GetOptionsPanel = function(self) return Options; end	
 
 ChatHandler = Turbine.Chat;
-DoThis = function(sender, args)
-	Turbine.PluginManager.ShowOptions(Plugins["Auras"])
-end
-Turbine.Shell.AddCommand("auras", DoThis);
-
-
 
 ReloadHandler = function(delta)
 	if resetTime ~= nil then
 		if resetTime < Turbine.Engine.GetGameTime() then
 			resetTime = nil;
+			playerRole = GetRole();
 			Reload();
 			RemoveCallback(Updater, "Tick", ReloadHandler);
 		end
@@ -84,16 +79,15 @@ elseif playerClass == Turbine.Gameplay.Class.Captain then
 
 elseif playerClass == Turbine.Gameplay.Class.Champion then
 	
-	--import "ExoPlugins.ClassAuras.ChampionAuras";
+	import "ExoPlugins.Auras.ClassAuras.ChampionAuras";
 	--Turbine.Shell.WriteLine("Champion")
-	--Tools = ChampionAuras(self);
+	Tools = _G.ChampionAuras(self);
 
 elseif playerClass == Turbine.Gameplay.Class.Guardian then
 
-	--import "ExoPlugins.ClassAuras.GuardianAuras";
-	--Tools = GuardianAuras(self);
-	
-	Turbine.Shell.WriteLine("Guardian")
+	import "ExoPlugins.Auras.ClassAuras.GuardianAuras";
+	Tools = _G.GuardianAuras(self);
+
 elseif playerClass == Turbine.Gameplay.Class.Hunter then
 
 	Turbine.Shell.WriteLine("Hunter")
@@ -120,7 +114,7 @@ plugin.Unload=function()
 	RemoveCallback(ChatHandler, "Received", RefreshTools);
 	Tools:Unload();
 	Options:Unload();
-	SaveData(Turbine.DataScope.Character, "ClassAuraSettings", Settings);
+	SaveData(Turbine.DataScope.Character, "AurasSettings", Settings);
 	Turbine.Shell.WriteLine("Unload Complete");
 	Turbine.Shell.RemoveCommand("auras");
 	Turbine.Shell.RemoveCommand("Auras");

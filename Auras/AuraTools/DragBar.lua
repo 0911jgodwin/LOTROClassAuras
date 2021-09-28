@@ -5,7 +5,7 @@ function DragBar:Constructor(child, name)
 	self.child = child;
 	self.name = name;
 
-	self.visible = false;
+	self.visible = true;
 	self.draggable = false;
 
 	self:SetVisible(false);

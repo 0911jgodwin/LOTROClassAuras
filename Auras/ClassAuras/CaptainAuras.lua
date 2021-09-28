@@ -37,12 +37,17 @@ function CaptainAuras:ConfigureBars()
 	width = self:GetWidth();
 
 	self.RowInfo = Settings["Class"][playerRole]["Skills"]["RowInfo"];
-	self.Skills = Settings["Class"][self:GetRole()]["Skills"]["SkillData"];
-	self.ProcTable = Settings["Class"][self:GetRole()]["Procs"];
+	self.Skills = Settings["Class"][playerRole]["Skills"]["SkillData"];
+	self.ProcTable = Settings["Class"][playerRole]["Procs"];
+
+	local rowCount = 0;
+	for key, value in pairs(self.RowInfo) do
+		rowCount = rowCount + 1;
+	end
 
 	self.ProcBar= _G.EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
 	self.ProcBar:SetPosition(0, 0);
-	self.SkillBar = _G.SkillBar(self, width, 200, self.RowInfo, 3, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
+	self.SkillBar = _G.SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
 	self.SkillBar:SetPosition(0, 55);
 
 	self.RallyBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
