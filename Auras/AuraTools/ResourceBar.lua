@@ -70,7 +70,7 @@ function ResourceBar:Unload()
     for i = 1, self.pipCount, 1 do
         self.Pips[i]:Unload();
     end
-
+    self.image:SetSize(0,0);
     self.Pips = {};
     self:SetParent(nil);
 	self = nil;

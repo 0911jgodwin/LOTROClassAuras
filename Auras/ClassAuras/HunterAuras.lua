@@ -1,62 +1,69 @@
 import "ExoPlugins.Auras.AuraTools";
-_G.BrawlerAuras = class(Turbine.UI.Window)
-function BrawlerAuras:Constructor(parent, x, y)
+_G.HunterAuras = class(Turbine.UI.Window)
+function HunterAuras:Constructor(parent)
     Turbine.UI.Window.Constructor(self)
-    self:SetParent(parent);
 
+	self:SetParent(parent);
+
+	--Due to the design of the bars, keep the width of this window as a multiple of 6 to avoid weird alignment issues.
+    self:SetSize(312, 200);
     self:SetMouseVisible(false);
 	self:SetVisible(true);
 
 	width = self:GetWidth();
 
+	self.swiftMercyStackCount = 0;
+    
+
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <Skill to Highlight>
+	self.SkillHighlights = {
+		["Swift and True"] = "Improved Swift Bow",
+	};
+
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};
 
-	self.BattleFlow = {
-		["Battle Flow 1"] = 1,
-		["Battle Flow 2"] = 2,
-		["Battle Flow 3"] = 3,
-		["Battle Flow 4"] = 4,
-		["Battle Flow 5"] = 5,
-		["Battle Flow 6"] = 6,
-		["Battle Flow 7"] = 7,
-		["Battle Flow 8"] = 8,
-		["Battle Flow 9"] = 9,
-	}
-
-	self.mettleCosts = {
-		["Shattering Fist"] = 3,
-		["Backhand Clout"] = 3,
-		["Strike Towards the Sky"] = 3,
-		["Fulgurant Strike"] = 3,
-		["Overhand Smash"] = 3,
-		["Pummel"] = 3,
-		["Helm-crusher"] = 3,
-		["Mighty Upheaval"] = 3,
-		["Fist of the Valar"] = 3,
-		["Gut Punch"] = 3,
-		["Knee Strike"] = 3,
+	self.focusCosts = {
+		["Improved Penetrating Shot"] = 3,
+		["Blood Arrow"] = 3,
+		["Improved Merciful Shot"] = 6,
+		["Barrage"] = 3,
+		["Split Shot"] = 2,
+		["Pinning Shot"] = 3,
+		["Rain of Arrows"] = 5,
+		["Upshot"] = 1,
+		["Explosive Arrow"] = 3,
 	};
 
 	self:ConfigureBars();
-    self:ConfigureCallbacks();
-    self.DragBar = DragBar( self, "Brawler Auras" );
+	self:ConfigureCallbacks();
+
+	self.DragBar = DragBar( self, "Hunter Auras" );
 end
 
-function BrawlerAuras:MettleMangement(mettleTotal)
-	self.mettle:SetTotal(mettleTotal);
+function HunterAuras:FocusManagement(focusTotal)
+	self.focus:SetTotal(focusTotal);
 
-	for key, value in pairs(self.mettleCosts) do
-		if self.mettleCosts[key] <= mettleTotal then
-			self.SkillBar:ToggleActive(key, true);
+	for key, value in pairs(self.focusCosts) do
+		if key == "Improved Merciful Shot" then
+			if self.focusCosts[key] <= (focusTotal + self.swiftMercyStackCount) then
+				self.SkillBar:ToggleActive(key, true);
+			else
+				self.SkillBar:ToggleActive(key, false);
+			end
 		else
-			self.SkillBar:ToggleActive(key, false);
+			if self.focusCosts[key] <= (focusTotal) then
+				self.SkillBar:ToggleActive(key, true);
+			else
+				self.SkillBar:ToggleActive(key, false);
+			end
 		end
 	end
 end
 
-function BrawlerAuras:ConfigureBars()
+function HunterAuras:ConfigureBars()
 
 	self:SetPosition(Settings["General"]["Position"][1], Settings["General"]["Position"][2]);
 	
@@ -83,14 +90,11 @@ function BrawlerAuras:ConfigureBars()
 
 	self.colours = {
 		[0] = Turbine.UI.Color(1.00, 0.96, 0.41),
-		[4] = Turbine.UI.Color(0.87, 0.55, 0.1),
-		[7] = Turbine.UI.Color(0.77, 0.12, 0.23),
-    };
-	self.mettle = ResourceBar(self, width, 24, 9, self.colours);
-	self.mettle:SetPosition(0, 35);
-	self.mettle:SetTotal(0);
-
-	self.lastTier = "Battle Flow 1";
+		[9] = Turbine.UI.Color(0.77, 0.12, 0.23),
+	};
+	self.focus = ResourceBar(self, width, 24, 9, self.colours);
+	self.focus:SetPosition(0, 35);
+	self.focus:SetTotal(playerAttributes:GetFocus());
 
 	if Settings["General"]["ShowSkills"] then
 		for i = 1, skillList:GetCount(), 1 do
@@ -107,24 +111,33 @@ function BrawlerAuras:ConfigureBars()
 	end
 end
 
-function BrawlerAuras:ConfigureCallbacks() 
+function HunterAuras:ConfigureCallbacks() 
 	self.effectAddedCallback = AddCallback(playerEffects, "EffectAdded", function(sender, args)
 		local effect = playerEffects:Get(args.Index);
 		local effectName = effect:GetName();
+
+		self.EffectIDs[effectName] = effect:GetID();
 
 		if Settings["General"]["Debug"] then
 			Debug("Effect added: " .. effectName .. " | Effect Icon: " .. effect:GetIcon());
 		end
 
-		if self.BattleFlow[effectName] ~= nil then
-			self.lastTier = effectName;
-			self:MettleMangement(self.BattleFlow[effectName]);
+		if effectName == "Swift Mercy" and self.swiftMercyStackCount == 0 then
+			self.swiftMercyStackCount = 1;
 		end
 
 		if self.ProcTable[effectName] then
 			self.EffectIDs[effectName] = effect:GetID();
 			self.ProcBar:SetActive(effectName, effect:GetDuration());
 		end
+
+		if self.SkillHighlights[effectName] then
+			self.EffectIDs[effectName] = effect:GetID();
+			if self.Skills[self.SkillHighlights[effectName]] then
+				self.SkillBar:ToggleHighlight(self.SkillHighlights[effectName], true);
+			end
+		end
+
 	end);
 
 	self.effectRemovedCallback = AddCallback(playerEffects, "EffectRemoved", function(sender, args)
@@ -132,11 +145,26 @@ function BrawlerAuras:ConfigureCallbacks()
 		if effect ~= nil then 
 			local effectName = effect:GetName();
 
-			if effectName == self.lastTier then
-				self:MettleMangement(0);
+			if effectName == "Parry Response" and effect:GetID() == self.EffectIDs[effectName] then
+				self.SkillBar:ToggleActive("Sweeping Riposte", false);
 			end
+
+			if effectName == "Swift Mercy" and effect:GetID() == self.EffectIDs[effectName] then
+				Debug("reset");
+				self.swiftMercyStackCount = 0;
+			elseif effectName == "Swift Mercy" then
+				Debug("Stack increase")
+				self.swiftMercyStackCount = self.swiftMercyStackCount + 1;
+			end
+
 			if self.ProcTable[effectName] and effect:GetID() == self.EffectIDs[effectName] then
 				self.ProcBar:SetInactive(effectName);
+			end
+
+			if self.SkillHighlights[effectName] and effect:GetID() == self.EffectIDs[effectName] then
+				if self.Skills[self.SkillHighlights[effectName]] then
+					self.SkillBar:ToggleHighlight(self.SkillHighlights[effectName], false);
+				end
 			end
 		end
 	end);
@@ -145,23 +173,35 @@ function BrawlerAuras:ConfigureCallbacks()
 		for i = 1, skillList:GetCount(), 1 do
 			local item = skillList:GetItem(i);
 			local name = item:GetSkillInfo():GetName();
-			local ID = item:GetSkillInfo():GetIconImageID();
-
+		
 			self.Callbacks[name] = {}
 
 			if self.Skills[name] then
 				self.SkillsTable[name] = item
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-				end));
+
+				if name == "Blood Arrow" then
+					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+						self.SkillBar:ToggleActive("Exsanguinate", true, 8);
+					end));
+				else
+					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+					end));
+				end
 			end
 		end
 	end
+
+	self.FocusCallback = AddCallback(playerAttributes, "FocusChanged", function(sender, args)
+		self:FocusManagement(playerAttributes:GetFocus());
+	end);
 end
 
-function BrawlerAuras:RemoveCallbacks()
+function HunterAuras:RemoveCallbacks()
 	RemoveCallback(playerEffects, "EffectAdded", self.effectAddedCallback);
 	RemoveCallback(playerEffects, "EffectRemoved", self.effectRemovedCallback);
+	RemoveCallback(playerAttributes, "FocusChanged", self.FocusCallback);
 	for key, value in pairs(self.Callbacks) do
         for _, callback in pairs(value) do
             RemoveCallback(self.SkillsTable[key], "ResetTimeChanged", callback);
@@ -169,7 +209,7 @@ function BrawlerAuras:RemoveCallbacks()
     end
 	self.ProcBar:Unload();
 	self.SkillBar:Unload();
-	self.mettle:Unload();
+	self.focus:Unload();
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};
@@ -177,7 +217,7 @@ function BrawlerAuras:RemoveCallbacks()
 	collectgarbage()
 end
 
-function BrawlerAuras:Unload()
+function HunterAuras:Unload()
 	self:RemoveCallbacks();
 	Data = {
 		[1] = self:GetLeft(),
@@ -187,7 +227,7 @@ function BrawlerAuras:Unload()
 	Settings["General"]["Position"] = Data;
 end
 
-function BrawlerAuras:Reload()
+function HunterAuras:Reload()
 	skillList = player:GetTrainedSkills();
 	self:RemoveCallbacks();
 	self:ConfigureBars();

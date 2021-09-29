@@ -9,7 +9,7 @@ function ConfigureDefaultSettings()
 	if playerClass == Turbine.Gameplay.Class.Beorning then
 
 	elseif playerClass == Turbine.Gameplay.Class.Brawler then
-
+		settings["Class"] = ConfigureBrawlerSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Burglar then
 
 	elseif playerClass == Turbine.Gameplay.Class.Captain then
@@ -19,7 +19,7 @@ function ConfigureDefaultSettings()
 	elseif playerClass == Turbine.Gameplay.Class.Guardian then
 		settings["Class"] = ConfigureGuardianSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Hunter then
-
+		settings["Class"] = ConfigureHunterSettings();
 	elseif playerClass == Turbine.Gameplay.Class.LoreMaster then
 
 	elseif playerClass == Turbine.Gameplay.Class.Minstrel then
@@ -44,6 +44,19 @@ function ConfigureBrawlerSettings()
 
 	--Blue-only procs
 	local BlueProcs = CopyTable(SharedProcTable);
+	BlueProcs["DNT - Mettle Shield"] = {1090552382, 0, 0};
+	BlueProcs["Innate Strength: Intimidating Presence - Tier 1"] = {1092693311, 1, 1};
+	BlueProcs["Innate Strength: Intimidating Presence - Tier 2"] = {1092693311, 1, 2};
+	BlueProcs["Innate Strength: Intimidating Presence - Tier 3"] = {1092693311, 1, 3};
+	BlueProcs["Innate Strength: Intimidating Presence - Tier 4"] = {1092693311, 1, 4};
+	BlueProcs["Innate Strength: Inner Resilience - Tier 1"] = {1092693310, 2, 1};
+	BlueProcs["Innate Strength: Inner Resilience - Tier 2"] = {1092693310, 2, 2};
+	BlueProcs["Innate Strength: Inner Resilience - Tier 3"] = {1092693310, 2, 3};
+	BlueProcs["Innate Strength: Inner Resilience - Tier 4"] = {1092693310, 2, 4};
+	BlueProcs["Innate Strength: Deflecting Technique - Tier 1"] = {1092693309, 3, 1};
+	BlueProcs["Innate Strength: Deflecting Technique - Tier 2"] = {1092693309, 3, 2};
+	BlueProcs["Innate Strength: Deflecting Technique - Tier 3"] = {1092693309, 3, 3};
+	BlueProcs["Innate Strength: Deflecting Technique - Tier 4"] = {1092693309, 3, 4};
 
 	--Red-only procs
 	local RedProcs = CopyTable(SharedProcTable);
@@ -84,18 +97,18 @@ function ConfigureBrawlerSettings()
 		["Low Strike"] = {1092595470, 1, 1, false, true},
 		["Sinister Cross"] = {1092595471, 2, 1, false, true},
 		["Dextrous Hook"] = {1092595472, 3, 1, false, true},
-		["Backhand Clout"] = {1092598117, 5, 1, false, true},
-		["Strike Towards the Sky"] = {1092686889, 6, 1, false, true},
+		["Backhand Clout"] = {1092598117, 5, 1, true, true},
+		["Strike Towards the Sky"] = {1092686889, 6, 1, true, true},
 		["Hurl Object"] = {1092687520, 7, 1, false, true},
-		["Fulgurant Strike"] = {1091509864, 8, 1, false, true},
+		["Fulgurant Strike"] = {1091509864, 8, 1, true, true},
 		
 		["Quick Feint"] = {1092598114, 1, 2, false, true},
-		["Overhand Smash"] = {1092598116, 3, 2, false, true},
-		["Knee Strike"] = {1092598108 , 5, 2, false, true},
-		["Helm-crusher"] = {1092685337, 6, 2, false, true},
+		["Overhand Smash"] = {1092598116, 3, 2, true, true},
+		["Knee Strike"] = {1092598108 , 5, 2, true, true},
+		["Helm-crusher"] = {1092685337, 6, 2, true, true},
 		["Helm's Hammer"] = {1092598113, 7, 2, false, true},
-		["Mighty Upheaval"] = {1092598109, 8, 2, false, true},
-		["Fist of the Valar"] = {1092695530, 9, 2, false, true},
+		["Mighty Upheaval"] = {1092598109, 8, 2, true, true},
+		["Fist of the Valar"] = {1092695530, 9, 2, true, true},
 		["Get Serious"] = {1092628691, 10, 2, false, true},
 		
 		["Follow Me!"] = {1092686890, 1, 3, false, false},
@@ -107,15 +120,21 @@ function ConfigureBrawlerSettings()
 		["Share Innate Strength: Balance"] = {1092687524, 7, 3, false, false},
 		["One for All"] = {1091805278, 8, 3, false, false},
 		["Weather Blows"] = {1090541178, 9, 3, false, false},
+		["Efficient Strikes"] = {1092693209, 10, 3, false, false},
+		["Iron Will"] = {1092598111, 11, 3, false, false},
+		["Bracing Guard"] = {1092693316, 12, 3, false, false},
 	};
 
 	--Blue-only skils
 	local BlueSkills = CopyTable(SharedSkills);
+	BlueSkills["Come At Me"] = {1092598121, 4, 2, false, true};
+	BlueSkills["Brash Invitation"] = {1092598119, 4, 1, false, true};
+	BlueSkills["Gut Punch"] = {1092692924, 2, 2, true, true};
 
 	--Red-only skils
 	local RedSkills = CopyTable(SharedSkills);
-	RedSkills["Pummel"] = {1092598112, 4, 2, false, true};
-	RedSkills["Shattering Fist"] = {1092598120, 4, 1, false, true};
+	RedSkills["Pummel"] = {1092598112, 4, 2, true, true};
+	RedSkills["Shattering Fist"] = {1092598120, 4, 1, true, true};
 	RedSkills["First Strike"] = {1091805264, 2, 2, false, true};
 
 
@@ -418,8 +437,6 @@ function ConfigureGuardianSettings()
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
 	local SharedProcTable = {
-		["Improved Wild Attack"] = {1090553751, 1, 0},
-		["Champion's Advantage"] = {1091830092, 3, 0},
 	};
 
 	--Blue-only procs
@@ -526,15 +543,131 @@ function ConfigureGuardianSettings()
 
 	--Red-only skils
 	local RedSkills = CopyTable(SharedSkills);
-	RedSkills["Devastating Strike"] = {1091804923, 1, 1, false, true};
-	RedSkills["Remorseless Strike"] = {1090553759, 1, 2, true, true};
-	RedSkills["Champion's Duel"] = {1091804891, 4, 3, false, false};
 
 	--Yellow-only skils
 	local YellowSkills = CopyTable(SharedSkills);
-	YellowSkills["Rend"] = {1091459631, 1, 1, false, true};
-	YellowSkills["Fury of Blades"] = {1091830071, 1, 2, true, true};
-	YellowSkills["Blade Storm"] = {1090553756, 3, 2, true, true};
+
+
+	local BlueData = {
+		["Procs"] = BlueProcs,
+		["Skills"] = {
+			["RowInfo"] = BlueRowInfo,
+			["SkillData"] = BlueSkills,
+		};
+	};
+
+	local RedData = {
+		["Procs"] = RedProcs,
+		["Skills"] = {
+			["RowInfo"] = RedRowInfo,
+			["SkillData"] = RedSkills,
+		};
+	};
+
+	local YellowData = {
+		["Procs"] = YellowProcs,
+		["Skills"] = {
+			["RowInfo"] = YellowRowInfo,
+			["SkillData"] = YellowSkills,
+		};
+	};
+
+	local Data = {
+		[1] = BlueData,
+		[2] = RedData,
+		[3] = YellowData,
+	};
+
+	return Data;
+end
+
+
+function ConfigureHunterSettings()
+	
+	--Shared procs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
+	local SharedProcTable = {
+		["Fast Draw - Tier 1"] = {1090532013, 1, 1},
+		["Fast Draw - Tier 2"] = {1090532013, 1, 2},
+		["Fast Draw - Tier 3"] = {1090532013, 1, 3},
+	};
+
+	--Blue-only procs
+	local BlueProcs = CopyTable(SharedProcTable);
+	BlueProcs["Volley"] = {1090598919, 2, 0};
+
+	--Red-only procs
+	local RedProcs = CopyTable(SharedProcTable);
+
+	--Yellow-only procs
+	local YellowProcs = CopyTable(SharedProcTable);
+
+
+	--This table basically just holds the icon size information for each row.
+	--If you want to make a particular row of quickslots large just adjust the value for the given row index
+	local SharedRowInfo = {
+		[1] = 38,
+		[2] = 32,
+		[3] = 38,
+	};
+
+	--Blue row-info settings
+	local BlueRowInfo = CopyTable(SharedRowInfo);
+	--Red row-info settings
+	local RedRowInfo = CopyTable(SharedRowInfo);
+	--Yellow row-info settings
+	local YellowRowInfo = CopyTable(SharedRowInfo);
+
+
+	--Shared Skill List
+	--Data required for additional entries to these tables:
+	--[<Skill Name>] = {<image>, <x position>, <y position>, <responsive>, <visible off CD>}
+	--Responsive skills are those that are not always available, they may require you to progress through a skill chain to unlock
+	--for example in order to unlock Retaliation on Guardian you need a parry response effect to be active, therefore Retaliation is responsive.
+	local SharedSkills = {
+		["Improved Quick Shot"] = {1090553925, 1, 1, false, true},
+		["Improved Penetrating Shot"] = {1090553933, 2, 1, false, true},
+		["Improved Swift Bow"] = {1090553930, 3, 1, false, true},
+		
+		["Split Shot"] = {1090625142, 7, 1, true, true},
+		["Blindside"] = {1090553942, 8, 1, false, true},
+		
+		["Barbed Arrow"] = {1090553904, 1, 2, false, true},
+		["Heart Seeker"] = {1091388859, 2, 2, false, true},
+		["Rain of Arrows"] = {1090553936, 6, 2, false, true},
+		["Pinning Shot"] = {1091804877, 7, 2, true, true},
+		["Set Trap"] = {1090524209, 8 , 2, false, true},
+		["Bard's Arrow"] = {1090532133, 9, 2, false, true},
+		["Improved Merciful Shot"] = {1090553939, 10, 2, false, true},
+
+		["Burn Hot"] = {1091456474, 1, 3, false, false},
+		["Intent Concentration"] = {1090541195, 2, 3, false, false},
+		["Cry of the Hunter"] = {1091757776, 3, 3, false, false},
+		["Distracting Shot"] = {1091459007, 4, 3, false, false},
+	};
+	--Blue-only skils
+	local BlueSkills = CopyTable(SharedSkills);
+	BlueSkills["Barrage"] = {1091829817, 4, 1, true, true};
+	BlueSkills["Rapid Fire"] = {1091804881, 5, 3, false, false};
+	BlueSkills["Blood Arrow"] = {1091591837, 5, 1, true, true};
+	BlueSkills["Exsanguinate"] = {1091804879, 6, 1, true, true};
+
+	--Red-only skils
+	local RedSkills = CopyTable(SharedSkills);
+	RedSkills["Upshot"] = {1091804886, 4, 1, true, true};
+	RedSkills["Blood Arrow"] = {1091591837, 5, 1, true, true};
+	RedSkills["Exsanguinate"] = {1091804879, 6, 1, true, true};
+
+	--Yellow-only skils
+	local YellowSkills = CopyTable(SharedSkills);
+	YellowSkills["Lingering Wound"] = {1091804872, 4, 1, false, true};
+	YellowSkills["Explosive Arrow"] = {1091459008, 5, 1, false, true};
+	YellowSkills["Decoy"] = {1091829826, 6, 1, false, true};
+	YellowSkills["Tripwire"] = {1091388957, 7, 1, false, true};
+	YellowSkills["Rain of Thorns"] = {1090532137, 3, 2, false, true};
+	YellowSkills["Piercing Trap"] = {1091829819, 4, 2, false, true};
+	YellowSkills["The One Trap"] = {1091798545, 5, 2, false, true};
 
 
 	local BlueData = {

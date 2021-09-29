@@ -267,34 +267,36 @@ function GuardianAuras:ConfigureCallbacks()
 		end
 	end);
 
-	for i = 1, skillList:GetCount(), 1 do
-        local item = skillList:GetItem(i);
-        local name = item:GetSkillInfo():GetName();
-		local ID = item:GetSkillInfo():GetIconImageID();
+	if Settings["General"]["ShowSkills"] then
+		for i = 1, skillList:GetCount(), 1 do
+			local item = skillList:GetItem(i);
+			local name = item:GetSkillInfo():GetName();
+			local ID = item:GetSkillInfo():GetIconImageID();
 
 		
-        self.Callbacks[name] = {}
+			self.Callbacks[name] = {}
 
-		if self.Skills[name] then
-			self.SkillsTable[name] = item;
+			if self.Skills[name] then
+				self.SkillsTable[name] = item;
 
-			if name == "Bash" or name == "Shield-taunt" then
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-					self.SkillBar:ToggleActive("Shield-smash", true, 5);
-				end));
-			elseif name == "Thrust" or name == "Overwhelm" then
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-					self.SkillBar:ToggleActive("To the King", true, 5);
-				end));
-			else
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-				end));
+				if name == "Bash" or name == "Shield-taunt" then
+					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+						self.SkillBar:ToggleActive("Shield-smash", true, 5);
+					end));
+				elseif name == "Thrust" or name == "Overwhelm" then
+					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+						self.SkillBar:ToggleActive("To the King", true, 5);
+					end));
+				else
+					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+					end));
+				end
 			end
 		end
-    end
+	end
 end
 
 function GuardianAuras:RemoveCallbacks()

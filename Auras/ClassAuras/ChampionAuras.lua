@@ -154,19 +154,21 @@ function ChampionAuras:ConfigureCallbacks()
 		end
 	end);
 
-	for i = 1, skillList:GetCount(), 1 do
-        local item = skillList:GetItem(i);
-        local name = item:GetSkillInfo():GetName();
+	if Settings["General"]["ShowSkills"] then
+		for i = 1, skillList:GetCount(), 1 do
+			local item = skillList:GetItem(i);
+			local name = item:GetSkillInfo():GetName();
 		
-        self.Callbacks[name] = {}
+			self.Callbacks[name] = {}
 
-		if self.Skills[name] then
-			self.SkillsTable[name] = item
-            table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-                self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-            end));
+			if self.Skills[name] then
+				self.SkillsTable[name] = item
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+				end));
+			end
 		end
-    end
+	end
 
 	self.FervorCallback = AddCallback(playerAttributes, "FervorChanged", function(sender, args)
 		self:FervorManagement(playerAttributes:GetFervor());

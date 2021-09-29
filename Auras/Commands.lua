@@ -14,5 +14,11 @@ function Commands:Execute(cmd, args)
 		if string.find(args, "reload") == 1 then
 			Reload();
 		end
+
+		if string.find(args, "help") == 1 then
+			Turbine.Shell.WriteLine("<rgb=#FF5555><Auras></rgb> Usage: /auras options | reload");
+		end
+	else
+		Turbine.Shell.WriteLine("<rgb=#FF5555><Auras></rgb> Usage: /auras options | reload");
 	end
 end

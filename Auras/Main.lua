@@ -65,8 +65,8 @@ if playerClass == Turbine.Gameplay.Class.Beorning then
 
 elseif playerClass == Turbine.Gameplay.Class.Brawler then
 
-	--import "ExoPlugins.ClassAuras.BrawlerAuras";
-	--Tools = BrawlerAuras(self, Settings["General"]["Position"][1], Settings["General"]["Position"][2]);
+	import "ExoPlugins.Auras.ClassAuras.BrawlerAuras";
+	Tools = _G.BrawlerAuras(self);
 
 elseif playerClass == Turbine.Gameplay.Class.Burglar then
 
@@ -80,7 +80,6 @@ elseif playerClass == Turbine.Gameplay.Class.Captain then
 elseif playerClass == Turbine.Gameplay.Class.Champion then
 	
 	import "ExoPlugins.Auras.ClassAuras.ChampionAuras";
-	--Turbine.Shell.WriteLine("Champion")
 	Tools = _G.ChampionAuras(self);
 
 elseif playerClass == Turbine.Gameplay.Class.Guardian then
@@ -90,7 +89,8 @@ elseif playerClass == Turbine.Gameplay.Class.Guardian then
 
 elseif playerClass == Turbine.Gameplay.Class.Hunter then
 
-	Turbine.Shell.WriteLine("Hunter")
+	import "ExoPlugins.Auras.ClassAuras.HunterAuras";
+	Tools = _G.HunterAuras(self);
 
 elseif playerClass == Turbine.Gameplay.Class.LoreMaster then
 
@@ -110,12 +110,16 @@ elseif playerClass == Turbine.Gameplay.Class.Warden then
 
 end
 
+plugin.Load=function(sender, args)
+	Turbine.Shell.WriteLine("<rgb=#FF5555><" .. plugin:GetName() .. "></rgb> V." .. plugin:GetVersion() .. " loaded.");
+end
+
 plugin.Unload=function()
 	RemoveCallback(ChatHandler, "Received", RefreshTools);
 	Tools:Unload();
 	Options:Unload();
 	SaveData(Turbine.DataScope.Character, "AurasSettings", Settings);
-	Turbine.Shell.WriteLine("Unload Complete");
 	Turbine.Shell.RemoveCommand("auras");
 	Turbine.Shell.RemoveCommand("Auras");
+	Turbine.Shell.WriteLine("<rgb=#FF5555><Auras></rgb> Unload Complete");
 end
