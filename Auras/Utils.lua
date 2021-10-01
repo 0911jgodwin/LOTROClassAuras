@@ -336,4 +336,6 @@ function GetRole()
 		end
 
 	end
+	--If it doesn't figure it out, just return 1 to prevent errors
+	return 1;
 end

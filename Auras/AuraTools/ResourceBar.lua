@@ -66,6 +66,31 @@ function ResourceBar:SetImage(total)
     self.image:SetSize(18, 18)
 end
 
+function ResourceBar:SetAttunementTotal(total)
+    
+    local colour;
+    for i = total, -9, -1 do
+        if self.colours[i] ~= nil then
+            colour = self.colours[i];
+            break;
+        end
+    end
+
+    local currentTotal = (total - 10);
+    if currentTotal < 0 then
+        currentTotal = currentTotal * -1;
+    end
+    self:SetImage(currentTotal);
+
+    for i = 1, self.pipCount, 1 do
+        if i <= currentTotal then
+            self.Pips[i]:SetActive(colour);
+        else
+            self.Pips[i]:SetInactive();
+        end
+    end
+end
+
 function ResourceBar:Unload()
     for i = 1, self.pipCount, 1 do
         self.Pips[i]:Unload();

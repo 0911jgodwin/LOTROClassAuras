@@ -21,7 +21,6 @@ function CaptainAuras:Constructor(parent)
 	};
 
 
-	self.role = self:GetRole();
 	self:ConfigureBars();
 	self:ConfigureCallbacks();
 
@@ -45,23 +44,23 @@ function CaptainAuras:ConfigureBars()
 		rowCount = rowCount + 1;
 	end
 
-	self.ProcBar= _G.EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ProcBar= _G.EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = _G.SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 55);
+	self.SkillBar:SetPosition(0, 59);
 
-	self.RallyBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.PenetratingBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.StanceBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 0.23, 0.77, 0.12 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.ReadiedBar = _G.BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
-	self.HardenedBar = _G.BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
+	self.RallyBar = _G.BuffBar(self, math.floor(width/3), 8, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.PenetratingBar = _G.BuffBar(self, math.floor(width/3), 8, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.StanceBar = _G.BuffBar(self, math.floor(width/3), 8, Turbine.UI.Color( 0.23, 0.77, 0.12 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ReadiedBar = _G.BuffBar(self, math.floor(width/2), 8, Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
+	self.HardenedBar = _G.BuffBar(self, math.floor(width/2), 8, Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
 
 
-	self.RallyBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 , 35);
-	self.StanceBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth()), 35);
-	self.PenetratingBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth() * 2), 35);
-	self.ReadiedBar:SetPosition(width/2 - self.ReadiedBar:GetWidth(), 44+2);
-	self.HardenedBar:SetPosition(width/2, 44+2);
+	self.RallyBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 , 42);
+	self.StanceBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth()), 42);
+	self.PenetratingBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth() * 2), 42);
+	self.ReadiedBar:SetPosition(width/2 - self.ReadiedBar:GetWidth(), 52);
+	self.HardenedBar:SetPosition(width/2, 52);
 
 	self.BarTable = {
 		["Battle-hardened"] = self.HardenedBar,
@@ -73,7 +72,7 @@ function CaptainAuras:ConfigureBars()
 	
 
 	for key, value in pairs(self.ProcTable) do
-		self.ProcBar:AddEffect(key, Effect(self.ProcBar, 32, value[1], value[3]), value[2]);
+		self.ProcBar:AddEffect(key, Effect(self.ProcBar, self.ProcBar:GetIconSize(), value[1], value[3]), value[2]);
 	end
 
 	if Settings["General"]["ShowSkills"] then
@@ -209,23 +208,11 @@ function CaptainAuras:RemoveCallbacks()
 	collectgarbage()
 end
 
-function CaptainAuras:GetRole()
-	for i = 1, skillList:GetCount(), 1 do
-        local item = skillList:GetItem(i);
-        local name = item:GetSkillInfo():GetName();
-		if name == "Valiant Strike" then
-			return 1;
-		elseif name == "Shadow's Lament" then
-			return 2;
-		elseif name == "Elendil's Roar" then
-			return 3;
-		end
-	end
-	return 4;
-end
-
 function CaptainAuras:Unload()
 	self:RemoveCallbacks();
+end
+
+function CaptainAuras:SavePosition()
 	Data = {
 		[1] = self:GetLeft(),
 		[2] = self:GetTop(),
@@ -237,7 +224,6 @@ end
 function CaptainAuras:Reload()
 	skillList = player:GetTrainedSkills();
 	self:RemoveCallbacks();
-	self.role = self:GetRole();
 	self:ConfigureBars();
 	self:ConfigureCallbacks();
 end

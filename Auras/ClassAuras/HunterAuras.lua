@@ -79,13 +79,13 @@ function HunterAuras:ConfigureBars()
 		rowCount = rowCount + 1;
 	end
 
-	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
 	self.SkillBar:SetPosition(0, 51);
 
 	for key, value in pairs(self.ProcTable) do
-		self.ProcBar:AddEffect(key, Effect(self.ProcBar, 32, value[1], value[3]), value[2]);
+		self.ProcBar:AddEffect(key, Effect(self.ProcBar, self.ProcBar:GetIconSize(), value[1], value[3]), value[2]);
 	end
 
 	self.colours = {
@@ -219,6 +219,9 @@ end
 
 function HunterAuras:Unload()
 	self:RemoveCallbacks();
+end
+
+function HunterAuras:SavePosition()
 	Data = {
 		[1] = self:GetLeft(),
 		[2] = self:GetTop(),

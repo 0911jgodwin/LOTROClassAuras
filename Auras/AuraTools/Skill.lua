@@ -4,17 +4,13 @@ function Skill:Constructor(parent, size, icon, responsive, display)
 
     self:SetParent(parent);
     self:SetSize(32);
-    self:SetVisible(true);
-
-    
+    self:SetVisible(true);    
 
     self.background = icon;
     self.grayscaleBackground = icon;
     self.tempBackground = self.background;
 
     self.display = display;
-
-    
 
 
     --This section covers the general skill slot, from the frame to the icon itself

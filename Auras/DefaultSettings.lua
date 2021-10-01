@@ -25,7 +25,7 @@ function ConfigureDefaultSettings()
 	elseif playerClass == Turbine.Gameplay.Class.Minstrel then
 
 	elseif playerClass == Turbine.Gameplay.Class.RuneKeeper then
-
+		settings["Class"] = ConfigureRunekeeperSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Warden then
 
 	end
@@ -668,6 +668,166 @@ function ConfigureHunterSettings()
 	YellowSkills["Rain of Thorns"] = {1090532137, 3, 2, false, true};
 	YellowSkills["Piercing Trap"] = {1091829819, 4, 2, false, true};
 	YellowSkills["The One Trap"] = {1091798545, 5, 2, false, true};
+
+
+	local BlueData = {
+		["Procs"] = BlueProcs,
+		["Skills"] = {
+			["RowInfo"] = BlueRowInfo,
+			["SkillData"] = BlueSkills,
+		};
+	};
+
+	local RedData = {
+		["Procs"] = RedProcs,
+		["Skills"] = {
+			["RowInfo"] = RedRowInfo,
+			["SkillData"] = RedSkills,
+		};
+	};
+
+	local YellowData = {
+		["Procs"] = YellowProcs,
+		["Skills"] = {
+			["RowInfo"] = YellowRowInfo,
+			["SkillData"] = YellowSkills,
+		};
+	};
+
+	local Data = {
+		[1] = BlueData,
+		[2] = RedData,
+		[3] = YellowData,
+	};
+
+	return Data;
+end
+
+function ConfigureRunekeeperSettings()
+	
+	--Data required for additional entries to the proc tables:
+	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
+
+	--Blue-only procs
+	local BlueProcs = {};
+
+	--Red-only procs
+	local RedProcs = {
+		["Closing Remarks"] = {1091502149, 1, 0},
+		["Aftershock"] = {1092665247, 1, 0},
+	};
+
+	--Yellow-only procs
+	local YellowProcs = {
+		["Closing Remarks"] = {1091502149, 1, 0},
+		["Aftershock"] = {1092665247, 1, 0},
+		["Concession and Rebuttal - 1"] = {1091804893, 2, 1},
+		["Concession and Rebuttal - 2"] = {1091804893, 2, 2},
+		["Concession and Rebuttal - 3"] = {1091804893, 2, 3},
+		["Concession and Rebuttal - 4"] = {1091804893, 2, 4},
+		["Concession and Rebuttal - 5"] = {1091804893, 2, 5},
+		["Flashing Images"] = {1091915737, 3, 0},
+	};
+
+
+	--This table basically just holds the icon size information for each row.
+	--If you want to make a particular row of quickslots large just adjust the value for the given row index
+	local SharedRowInfo = {
+		[1] = 38,
+		[2] = 32,
+		[3] = 38,
+	};
+
+	--Blue row-info settings
+	local BlueRowInfo = CopyTable(SharedRowInfo);
+	--Red row-info settings
+	local RedRowInfo = CopyTable(SharedRowInfo);
+	--Yellow row-info settings
+	local YellowRowInfo = CopyTable(SharedRowInfo);
+
+
+	--Data required for additional entries to these tables:
+	--[<Skill Name>] = {<image>, <x position>, <y position>, <responsive>, <visible off CD>}
+	--Responsive skills are those that are not always available, they may require you to progress through a skill chain to unlock
+	--for example in order to unlock Retaliation on Guardian you need a parry response effect to be active, therefore Retaliation is responsive.
+	--Blue-only skils
+	local BlueSkills = {
+		["Mending Verse"] = {1091454164, 1, 1, false, true},
+		["Writ of Health"] = {1091454166, 2, 1, false, true},
+		["Bombastic Inspiration"] = {1091804917, 3, 1, false, true},
+		["Prelude to Hope"] = {1091454167, 4, 1, false, true},
+		["Rune-sign of Winter"] = {1091585423, 5, 1, false, true},
+		["Essence of Storm"] = {1091454168, 6, 1, false, true},
+		["Scribe's Spark"] = {1091454169, 7, 1, false, true},
+		["Improved Final Word"] = {1091511267, 8, 1, false, true},
+		
+		["Rousing Words"] = {1091804932, 1, 2, false, true},
+		["Epic for the Ages"] = {1091454160, 2, 2, false, true},
+		["Word of Exaltation"] = {1091454161, 3, 2, false, true},
+		["Essay of Exaltation"] = {1091829850, 4, 2, false, true},
+		["Rune of Restoration"] = {1091829852, 5, 2, false, true},
+		["Flurry of Words"] = {1091454144, 6, 2, false, true},
+		["Volcanic Rune-stone"] = {1091804907, 7, 2, false, true},
+		["Fulgurite Rune-stone"] = {1091829838, 8, 2, false, true},
+		["Self-motivation"] = {1091454141, 9, 2, false, true},
+
+		["Do Not Fall This Day"] = {1091454172, 1, 3, false, false},
+		["Our Fates Entwined"] = {1091829845, 2, 3, false, false},
+		["Armour of The Elements"] = {1091478065, 3, 3, false, false},
+		["Steady Hands"] = {1091511268, 4, 3, false, false},
+	};
+
+	--Red-only skils
+	local RedSkills = {
+		["Fiery Ridicule"] = {1091440847, 1, 1, false, true},
+		["Writ of Fire"] = {1091440848, 2, 1, false, true},
+		["Distracting Flame"] = {1091511271, 3, 1, false, true},
+		["Smouldering Wrath"] = {1091440849, 4, 1, false, true},
+		["Ceaseless Argument"] = {1091454410, 5, 1, false, true},
+		["Essence of Storm"] = {1091454168, 6, 1, false, true},
+		["Scribe's Spark"] = {1091454169, 7, 1, false, true},
+		["Improved Final Word"] = {1091511267, 8, 1, false, true},
+
+		["Essay of Fire"] = {1091829841, 1, 2, false, true},
+		["Essence of Flame"] = {1091829836, 2, 2, false, true},
+		["Scathing Mockery"] = {1091804926, 3, 2, false, true},
+		["Combustion"] = {1091804898, 4, 2, false, true},
+		["Flurry of Words"] = {1091454144, 5, 2, false, true},
+		["Vivid Imagery"] = {1091914259, 6, 2, false, true},
+		["Epic Conclusion"] = {1091454171, 7, 2, false, true},
+		["Volcanic Rune-stone"] = {1091804907, 8, 2, false, true},
+		["Fulgurite Rune-stone"] = {1091829838, 9, 2, false, true},
+		["Self-motivation"] = {1091454141, 10, 2, false, true},
+
+		["Do Not Fall This Day"] = {1091454172, 1, 3, false, false},
+		["Armour of The Elements"] = {1091478065, 2, 3, false, false},
+		["Steady Hands"] = {1091511268, 3, 3, false, false},
+	};
+
+	--Yellow-only skils
+	local YellowSkills = {
+		["Ceaseless Argument"] = {1091454410, 1, 1, false, true},
+		["Writ of Lightning"] = {1091829864, 2, 1, false, true},
+		["Scribe's Spark"] = {1091454169, 3, 1, false, true},
+		["Essence of Storm"] = {1091454168, 4, 1, false, true},
+		["Shocking Words"] = {1091454170, 5, 1, false, true},
+		["Static Surge"] = {1091804904, 6, 1, true, true},
+		["Sustaining Bolt"] = {1091804937, 7, 1, false, true},
+		["Improved Final Word"] = {1091511267, 8, 1, false, true},
+
+		["Flurry of Words"] = {1091454144, 1, 2, false, true},
+		["Vivid Imagery"] = {1091914259, 2, 2, false, true},
+		["Epic Conclusion"] = {1091454171, 3, 2, false, true},
+		["Volcanic Rune-stone"] = {1091804907, 4, 2, false, true},
+		["Fulgurite Rune-stone"] = {1091829838, 5, 2, false, true},
+		["Shocking Touch"] = {1091454163, 6, 2, false, true},
+		["Self-motivation"] = {1091454141, 7, 2, false, true},
+
+		["Do Not Fall This Day"] = {1091454172, 1, 3, false, false},
+		["Concession and Rebuttal"] = {1091804893, 2, 3, false, false},
+		["Armour of The Elements"] = {1091478065, 3, 3, false, false},
+		["Steady Hands"] = {1091511268, 4, 3, false, false},
+	};
 
 
 	local BlueData = {

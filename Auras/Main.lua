@@ -15,7 +15,7 @@ playerAttributes = player:GetClassAttributes();
 playerEffects = player:GetEffects();
 Updater = Updater();
 Settings = nil;
-
+ChatHandler = Turbine.Chat;
 
 if Turbine.PluginData.Load(Turbine.DataScope.Character, "AurasSettings") ~= nil then
 	Settings = LoadData(Turbine.DataScope.Character, "AurasSettings");
@@ -23,11 +23,6 @@ else
 	import "ExoPlugins.Auras.DefaultSettings";
 	Settings = ConfigureDefaultSettings();
 end
-
-Options = _G.OptionsMaster();
-plugin.GetOptionsPanel = function(self) return Options; end	
-
-ChatHandler = Turbine.Chat;
 
 ReloadHandler = function(delta)
 	if resetTime ~= nil then
@@ -53,6 +48,11 @@ RefreshTools = function(f, args)
 	end
 end
 AddCallback(ChatHandler, "Received", RefreshTools);
+
+
+Options = _G.OptionsMaster();
+plugin.GetOptionsPanel = function(self) return Options; end	
+
 
 function Reload()
 	Tools:Reload();
@@ -102,7 +102,8 @@ elseif playerClass == Turbine.Gameplay.Class.Minstrel then
 
 elseif playerClass == Turbine.Gameplay.Class.RuneKeeper then
 
-	Turbine.Shell.WriteLine("Runekeeper")
+	import "ExoPlugins.Auras.ClassAuras.RunekeeperAuras";
+	Tools = _G.RunekeeperAuras(self);
 
 elseif playerClass == Turbine.Gameplay.Class.Warden then
 

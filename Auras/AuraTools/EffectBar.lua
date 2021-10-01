@@ -1,12 +1,12 @@
 _G.EffectBar = class(Turbine.UI.Control)
-function EffectBar:Constructor( parent, width, height, alignment )
+function EffectBar:Constructor( parent, width, height, alignment, iconSize )
 	Turbine.UI.Control.Constructor(self);
     self:SetParent(parent);
     self:SetSize(width, height);
     self:SetMouseVisible(false);
 	self:SetVisible(true);
 
-	self.iconSize = 32;
+	self.iconSize = iconSize;
 	self.effects = {};
 	self.priority = {};
 	self.activeEffects = {};
@@ -51,6 +51,10 @@ end
 function EffectBar:AddEffect( name, effect, priority )
 	self.effects[name] = effect;
 	self.priority[name] = priority;
+end
+
+function EffectBar:GetIconSize()
+	return self.iconSize;
 end
 
 function EffectBar:SetActive( name, duration )

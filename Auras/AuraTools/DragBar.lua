@@ -177,6 +177,9 @@ end
 function DragBar:ToggleDraggable()
 	if self.draggable == true then
 		self.draggable = false;
+		if type( self.child.SavePosition ) == "function" then
+			self.child:SavePosition();
+		end
 	else
 		self.draggable = true;
 	end
