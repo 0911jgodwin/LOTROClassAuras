@@ -7,8 +7,6 @@ function CaptainAuras:Constructor(parent)
     self:SetMouseVisible(false);
 	self:SetVisible(true);
 
-	self.role = nil;
-
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};
@@ -47,20 +45,20 @@ function CaptainAuras:ConfigureBars()
 	self.ProcBar= _G.EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = _G.SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 59);
+	self.SkillBar:SetPosition(0, 63);
 
-	self.RallyBar = _G.BuffBar(self, math.floor(width/3), 8, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.PenetratingBar = _G.BuffBar(self, math.floor(width/3), 8, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.StanceBar = _G.BuffBar(self, math.floor(width/3), 8, Turbine.UI.Color( 0.23, 0.77, 0.12 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.ReadiedBar = _G.BuffBar(self, math.floor(width/2), 8, Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
-	self.HardenedBar = _G.BuffBar(self, math.floor(width/2), 8, Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
+	self.RallyBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.PenetratingBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.StanceBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 0.23, 0.77, 0.12 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ReadiedBar = _G.BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
+	self.HardenedBar = _G.BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
 
 
 	self.RallyBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 , 42);
 	self.StanceBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth()), 42);
 	self.PenetratingBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth() * 2), 42);
-	self.ReadiedBar:SetPosition(width/2 - self.ReadiedBar:GetWidth(), 52);
-	self.HardenedBar:SetPosition(width/2, 52);
+	self.ReadiedBar:SetPosition(width/2 - self.ReadiedBar:GetWidth(), 54);
+	self.HardenedBar:SetPosition(width/2, 54);
 
 	self.BarTable = {
 		["Battle-hardened"] = self.HardenedBar,
@@ -89,15 +87,15 @@ function CaptainAuras:ConfigureBars()
 		end
 	end
 
-	if self.role == 1 then
+	if playerRole == 1 then
 		self.BarTable["Focus"] = self.StanceBar;
 		self.BarTable["Relentless Attack"] = nil;
 		self.BarTable["On Guard"] = nil;
-	elseif self.role == 2 then
+	elseif playerRole == 2 then
 		self.BarTable["On Guard"] = nil;
 		self.BarTable["Focus"] = nil;
 		self.BarTable["Relentless Attack"] = self.StanceBar;
-	elseif self.role == 3 then
+	elseif playerRole == 3 then
 		self.BarTable["Focus"] = nil;
 		self.BarTable["Relentless Attack"] = nil;
 		self.BarTable["On Guard"] = self.StanceBar;
@@ -167,20 +165,18 @@ function CaptainAuras:ConfigureCallbacks()
 		end
 	end);
 
-	if Settings["General"]["ShowSkills"] then
-		for i = 1, skillList:GetCount(), 1 do
-			local item = skillList:GetItem(i);
-			local name = item:GetSkillInfo():GetName();
-			local ID = item:GetSkillInfo():GetIconImageID();
-		
-			self.Callbacks[name] = {};
+	for i = 1, skillList:GetCount(), 1 do
+		local item = skillList:GetItem(i);
+		local name = item:GetSkillInfo():GetName();
+		local ID = item:GetSkillInfo():GetIconImageID();
+	
+		self.Callbacks[name] = {};
 
-			if self.Skills[name] then
-				self.SkillsTable[name] = item
-				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-				end))
-			end
+		if self.Skills[name] then
+			self.SkillsTable[name] = item
+			table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+				self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+			end))
 		end
 	end
 end

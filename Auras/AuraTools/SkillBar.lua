@@ -30,7 +30,9 @@ function SkillBar:AddSkill( name, skill, x, y )
 end
 
 function SkillBar:TriggerCooldown (name, cooldown)
-	self.Skills[name]:SetCooldown(cooldown);
+	if self.Skills[name] then
+		self.Skills[name]:SetCooldown(cooldown);
+	end
 end
 
 function SkillBar:Sort()

@@ -88,6 +88,9 @@ function HunterAuras:ConfigureBars()
 		self.ProcBar:AddEffect(key, Effect(self.ProcBar, self.ProcBar:GetIconSize(), value[1], value[3]), value[2]);
 	end
 
+	self.ProcBar:AddEffect("Penetrating Shot", Effect(self.ProcBar, self.ProcBar:GetIconSize(), 1090553933, 0), 0);
+	self.ProcBar:AddEffect("Barbed Arrow", Effect(self.ProcBar, self.ProcBar:GetIconSize(), 1090553904, 0), 4);
+
 	self.colours = {
 		[0] = Turbine.UI.Color(1.00, 0.96, 0.41),
 		[9] = Turbine.UI.Color(0.77, 0.12, 0.23),
@@ -150,10 +153,8 @@ function HunterAuras:ConfigureCallbacks()
 			end
 
 			if effectName == "Swift Mercy" and effect:GetID() == self.EffectIDs[effectName] then
-				Debug("reset");
 				self.swiftMercyStackCount = 0;
 			elseif effectName == "Swift Mercy" then
-				Debug("Stack increase")
 				self.swiftMercyStackCount = self.swiftMercyStackCount + 1;
 			end
 
@@ -169,26 +170,35 @@ function HunterAuras:ConfigureCallbacks()
 		end
 	end);
 
-	if Settings["General"]["ShowSkills"] then
-		for i = 1, skillList:GetCount(), 1 do
-			local item = skillList:GetItem(i);
-			local name = item:GetSkillInfo():GetName();
+	self.exsanguinate = nil;
+	for i = 1, skillList:GetCount(), 1 do
+		local item = skillList:GetItem(i);
+		local name = item:GetSkillInfo():GetName();
 		
-			self.Callbacks[name] = {}
+		if name == "Exsanguinate" then
+			self.exsanguinate = item;
+		end
+	end
 
-			if self.Skills[name] then
-				self.SkillsTable[name] = item
 
-				if name == "Blood Arrow" then
-					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-						self.SkillBar:ToggleActive("Exsanguinate", true, 8);
-					end));
-				else
-					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-					end));
-				end
+	for i = 1, skillList:GetCount(), 1 do
+		local item = skillList:GetItem(i);
+		local name = item:GetSkillInfo():GetName();
+		
+		self.Callbacks[name] = {}
+
+		if self.Skills[name] then
+			self.SkillsTable[name] = item
+
+			if name == "Blood Arrow" and self.exsanguinate ~= nil then
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+					self.SkillBar:ToggleActive("Exsanguinate", self.exsanguinate:IsUsable(), 8);
+				end));
+			else
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+				end));
 			end
 		end
 	end
