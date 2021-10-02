@@ -88,6 +88,7 @@ function OptionsProcs:Constructor()
 	end
 
 	self.procSettings:AddItem(self.buttonContainer);
+	self.loaded = true;
 end
 
 function OptionsProcs:AddEffect(effectName, effectIcon, effectPriority, effectStack)
@@ -102,7 +103,9 @@ function OptionsProcs:AddEffect(effectName, effectIcon, effectPriority, effectSt
 end
 
 function OptionsProcs:SizeChanged(args)
-	self.procSettings:SetLeft(GetMidpointPosition(self.procSettings:GetWidth(), self:GetWidth()));
+	if self.loaded then
+		self.procSettings:SetLeft(GetMidpointPosition(self.procSettings:GetWidth(), self:GetWidth()));
+	end
 end
 
 function OptionsProcs:SaveData()

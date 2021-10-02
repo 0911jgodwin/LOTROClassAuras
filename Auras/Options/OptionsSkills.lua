@@ -88,6 +88,7 @@ function OptionsSkills:Constructor()
 	end
 
 	self.procSettings:AddItem(self.buttonContainer);
+	self.loaded = true;
 end
 
 function OptionsSkills:AddSkill(skillName, skillIcon, skillX, skillY, skillResponsive, skillVisible)
@@ -102,7 +103,9 @@ function OptionsSkills:AddSkill(skillName, skillIcon, skillX, skillY, skillRespo
 end
 
 function OptionsSkills:SizeChanged(args)
-	self.procSettings:SetLeft(GetMidpointPosition(self.procSettings:GetWidth(), self:GetWidth()));
+	if self.loaded then
+		self.procSettings:SetLeft(GetMidpointPosition(self.procSettings:GetWidth(), self:GetWidth()));
+	end
 end
 
 function OptionsSkills:SaveData()

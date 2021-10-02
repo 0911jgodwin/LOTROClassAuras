@@ -75,11 +75,15 @@ function OptionsGeneral:Constructor()
 		self:SaveData();
 		Reload();
 	end
+
+	self.loaded = true;
 end
 
 function OptionsGeneral:SizeChanged(args)
-	self.auraSettings:SetLeft(GetMidpointPosition(self.auraSettings:GetWidth(), self:GetWidth()));
-	self.acceptButton:SetLeft(GetMidpointPosition(self.acceptButton:GetWidth(), self:GetWidth()));
+	if self.loaded then
+		self.auraSettings:SetLeft(GetMidpointPosition(self.auraSettings:GetWidth(), self:GetWidth()));
+		self.acceptButton:SetLeft(GetMidpointPosition(self.acceptButton:GetWidth(), self:GetWidth()));
+	end
 end
 
 

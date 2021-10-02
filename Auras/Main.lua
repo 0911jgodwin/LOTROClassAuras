@@ -49,7 +49,6 @@ RefreshTools = function(f, args)
 end
 AddCallback(ChatHandler, "Received", RefreshTools);
 
-
 Options = _G.OptionsMaster();
 plugin.GetOptionsPanel = function(self) return Options; end	
 
