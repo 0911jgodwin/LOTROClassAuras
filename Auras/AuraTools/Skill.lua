@@ -66,71 +66,18 @@ function Skill:Constructor(parent, size, icon, responsive, display)
     self.duration = -1;
     self.maxDuration = -1;
 
-    self.Cooldown = Turbine.UI.Window();
-    self.Cooldown:SetParent(self);
-    self.Cooldown:SetSize(32, 32);
-    self.Cooldown:SetPosition(1, 3);
-
-
-    self.RadialCooldown = Turbine.UI.Control();
-    self.RadialCooldown:SetParent(self.Cooldown);
-    self.RadialCooldown:SetSize(32, 32);
-    self.RadialCooldown:SetBlendMode(4);
-    self.RadialCooldown:SetBackColor(Turbine.UI.Color(1,0,0,0));
-    self.RadialCooldown:SetBackColorBlendMode(3);
-    self.RadialCooldown:SetVisible(true);
-    self.RadialCooldown:SetMouseVisible(false);
-
-    self.CooldownText = Turbine.UI.Label();
-    self.CooldownText:SetParent(self);
-    self.CooldownText:SetSize(size - math.ceil(size/16), size - math.ceil((size/16)*3));
+    self.CooldownText = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), 0.3);
     self.CooldownText:SetPosition(1, 3);
     self.CooldownText:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleCenter);
-    self.CooldownText:SetFontStyle(Turbine.UI.FontStyle.Outline);
-    self.CooldownText:SetFont(Turbine.UI.Lotro.Font.TrajanProBold16);
-    self.CooldownText:SetOutlineColor(Turbine.UI.Color(1,0,0,0));
-    self.CooldownText:SetBackColorBlendMode(2);
     self.CooldownText:SetMouseVisible(false);
-    self.CooldownText:SetStretchMode(3);
-    self.CooldownText:SetZOrder(1001);
+    self.CooldownText:SetZOrder(110);
     self.CooldownText:SetVisible(false);
 
-    self.Cooldown:SetStretchMode(1);
-    self.Cooldown:SetSize(size - math.ceil(size/16), size - math.ceil((size/16)*3));
-
-    self.oldGameTime = Turbine.Engine.GetGameTime();
-    self.steps = self.overlayEnd - self.overlayStart + 1;
-    self.Update = function()
-        self.duration =  self.duration - (Turbine.Engine.GetGameTime() - self.oldGameTime);
-        if self.duration <= 0 then
-            if self.active then
-                self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
-                self.Tint:SetVisible(false);
-            end
-            self.CooldownText:SetVisible(false);
-            self.Cooldown:SetVisible(false);
-            self.maxDuration = -1;
-            self:SetWantsUpdates(false);
-            if self.display == false then
-                self:SetVisible(false);
-                self:GetParent():Sort();
-            end
-        end
-        local timeLeft = math.round(self.duration);
-        if timeLeft < self.currentTime then
-            self.currentTime = timeLeft;
-            self.CooldownText:SetVisible(false);
-            self.CooldownText:SetText(SecondsToMinutes(self.currentTime));
-            self.CooldownText:SetVisible(true);
-        end
-        local progress = 1 - self.duration / self.maxDuration;
-        
-        self.RadialCooldown:SetBackground(self.overlayStart + math.floor(progress * self.steps));
-        self.oldGameTime = Turbine.Engine.GetGameTime();
-    end
-
     self.Highlight = Highlight(self, size - math.ceil(size/16), size - math.ceil((size/16)*3));
-
+    self.Highlight:SetZOrder(120);
+    self.RadialCooldown = RadialCooldown(self, size - math.ceil(size/16), size - math.ceil((size/16)*3));
+    self.RadialCooldown:SetZOrder(101);
+    self.RadialCooldown:SetPosition(1,3);
 
     --This updateHandler is for setting a responsive skill active
 
@@ -169,35 +116,58 @@ function Skill:ToggleActive( bool, timer )
 end
 
 function  Skill:SetCooldown( cooldown )
+    local active = self.duration > 0;
 	self.duration = cooldown;
+    self.RadialCooldown:Activate(self.duration);
     if self.duration < 0 then
-        self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
+        self:SetVisible( self.display );
         self.CooldownText:SetVisible(false);
-        self.Cooldown:SetVisible(false);
-        self.maxDuration = -1;
-        self:SetWantsUpdates(false);
+        if self.active then
+            self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
+            self.Tint:SetVisible(false);
+        end
         if self.display == false then
-            Turbine.Shell.WriteLine(self.duration)
-            self:SetVisible(false);
             self:GetParent():Sort();
         end
-        return;
+        return true;
     end
 
-    self.IconLabel:SetBackColor(Turbine.UI.Color(0.9,1,1,1));
-    self.oldGameTime = Turbine.Engine.GetGameTime();
-    self.currentTime = math.round(self.duration);
     self.CooldownText:SetVisible(true);
-    self.CooldownText:SetText(SecondsToMinutes(self.currentTime));
-    self.Cooldown:SetVisible(true);
+    self.IconLabel:SetBackColor(Turbine.UI.Color(0.9,1,1,1));
     if self.display == false then
         self:SetVisible(true);
         self:GetParent():Sort();
     end
-    if self.maxDuration < self.duration and self.duration > 0 then
-        self.maxDuration = self.duration;
-        self:SetWantsUpdates(true);
+    if active then
+        return true;
+    else
+        return false;
     end
+end
+
+function  Skill:Update( delta )
+	self.duration = self.duration - delta;
+    if self.duration < 0 then
+        self:SetVisible( self.display );
+        self.CooldownText:SetVisible(false);
+        if self.active then
+            self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
+            self.Tint:SetVisible(false);
+        end
+        if self.display == false then
+            self:GetParent():Sort();
+        end
+        return true;
+    end
+
+    local timeLeft = math.round(self.duration);
+    if timeLeft == self.currentTime then
+        return;
+    end
+    self.currentTime = timeLeft;
+    self.CooldownText:SetText(self.currentTime);
+    
+    return false;
 end
 
 function Skill:Unload()
@@ -213,6 +183,7 @@ function Skill:Unload()
     self.IconLabel:SetParent(nil);
     self.Tint:SetParent(nil);
     self.Highlight:Unload();
+    self.RadialCooldown:Unload();
     self:SetParent(nil);
     self = nil;
 end

@@ -5,7 +5,7 @@ function Effect:Constructor(parent, size, icon, stack)
 	self:SetParent(parent);
 	self:SetSize(size, size + 4);
     self:SetVisible(true);
-
+    size=38
     self.duration = -1;
     self.currentTime = -1;
     self.stack = stack;
@@ -31,14 +31,9 @@ function Effect:Constructor(parent, size, icon, stack)
     self.IconLabel:SetSize(32, 32);
     self.IconLabel:SetPosition( -2, -4 );
 
-    self.DurationLabel = Turbine.UI.Label();
-    self.DurationLabel:SetParent(self);
-    self.DurationLabel:SetSize(size, size);
+    self.DurationLabel = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), 0.33);
+    self.DurationLabel:SetPosition(1, 3);
     self.DurationLabel:SetTextAlignment(Turbine.UI.ContentAlignment.BottomCenter);
-    self.DurationLabel:SetFont(Turbine.UI.Lotro.Font.TrajanProBold22);
-    self.DurationLabel:SetOutlineColor(Turbine.UI.Color(0,0,0));
-    self.DurationLabel:SetFontStyle(Turbine.UI.FontStyle.Outline);
-    self.DurationLabel:SetPosition(-1, 6);
     self.DurationLabel:SetMouseVisible(false);
     self.DurationLabel:SetStretchMode(1);
     self.DurationLabel:SetZOrder(1001);
@@ -47,17 +42,12 @@ function Effect:Constructor(parent, size, icon, stack)
     self.BlackBorder:SetSize(size - math.ceil(size/16), size - math.ceil((size/16)*3) );
 
     if stack > 0 then
-        self.StackLabel = Turbine.UI.Label();
-        self.StackLabel:SetParent(self);
-        self.StackLabel:SetSize(size, size);
+        self.StackLabel = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), 0.33);
+        self.StackLabel:SetPosition(1, 3);
         self.StackLabel:SetTextAlignment(Turbine.UI.ContentAlignment.TopCenter);
-        self.StackLabel:SetFont(Turbine.UI.Lotro.Font.TrajanProBold22);
-        self.StackLabel:SetOutlineColor(Turbine.UI.Color(0,0,0));
-        self.StackLabel:SetFontStyle(Turbine.UI.FontStyle.Outline);
-        self.StackLabel:SetPosition(-1, -6);
         self.StackLabel:SetMouseVisible(false);
         self.StackLabel:SetText(stack);
-        self.StackLabel:SetStretchMode(3);
+        self.StackLabel:SetStretchMode(1);
         self.StackLabel:SetZOrder(1001);
     end
 
@@ -77,10 +67,7 @@ function  Effect:Update( delta )
     end
     self.currentTime = timeLeft;
     self.DurationLabel:SetText(self.currentTime);
-    if self.ShowDuration then
-        self.DurationLabel:SetVisible(false);
-        self.DurationLabel:SetVisible(true);
-    end
+    
     return false;
 end
 

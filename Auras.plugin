@@ -3,7 +3,7 @@
 	<Information>
 		<Name>Auras</Name>
 		<Author>Exo</Author>
-		<Version>0.6.3</Version>
+		<Version>0.6.4</Version>
 		<Description>Auras is a plugin that aims to drastically improve the visual clarity of various class procs, effects, resources, and cooldowns.
 
 
@@ -25,4 +25,5 @@ Plugin Discord: https://discord.gg/6CQWNeKxVN
 		<Image>Exoplugins/Auras/Resources/PluginIcon.tga</Image>
 	</Information>
 	<Package>ExoPlugins.Auras.Main</Package>
+	<Configuration Apartment="Auras"></Configuration>
 </Plugin>

@@ -1,7 +1,7 @@
 _G.Highlight = class(Turbine.UI.Window)
 function Highlight:Constructor(parent, frameWidth, frameHeight)
-    Turbine.UI.Window.Constructor(self)
-    self:SetParent(parent)
+    Turbine.UI.Window.Constructor(self);
+    self:SetParent(parent);
     self:SetMouseVisible(false);
 
     --Highlighting is done via Marching Ants animation--

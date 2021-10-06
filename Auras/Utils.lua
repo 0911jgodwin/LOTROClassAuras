@@ -52,6 +52,15 @@ function RemoveCallback(object, event, callback)
     end
 end
 
+function ConfigureFont()
+	local numbers = {};
+    for i = 0, 9, 1 do
+        numbers[i] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/AG" .. i .. ".tga");
+    end
+    numbers[10] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/AGColon.tga");
+	return numbers;
+end
+
 function SecondsToMinutes(time)
     local timeString = "";
     local seconds = 0;
@@ -64,10 +73,10 @@ function SecondsToMinutes(time)
         if seconds < 10 then
             seconds = "0" .. seconds;
         end
-        timeString = minutes .. ":" .. seconds;
+        timeString = minutes .. seconds;
     end
 
-    return timeString;
+    return tonumber(timeString);
 end
 
 function GetMidpointPosition(width, parentWidth)

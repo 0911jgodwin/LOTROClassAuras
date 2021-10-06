@@ -15,8 +15,23 @@ function SkillBar:Constructor(parent, width, height, rowInfo, rowCount, alignmen
 	self.maxHeight = rowCount;
 	self.width = self:GetWidth();
 
+	self.activeList = {};
+	self.activeCount = 0;
+
 	for i = 1, rowCount do
 		self.Grid[i] = {};
+	end
+
+	self.UpdateHandler = function(delta)
+		for key, value in pairs(self.activeList) do
+			if self.Skills[key]:Update(delta) then
+				self.activeCount = self.activeCount - 1;
+				self.activeList[key] = nil;
+			end
+		end
+		if self.activeCount <= 0 then
+			RemoveCallback(Updater, "Tick", self.UpdateHandler);
+		end
 	end
 end
 
@@ -30,8 +45,16 @@ function SkillBar:AddSkill( name, skill, x, y )
 end
 
 function SkillBar:TriggerCooldown (name, cooldown)
+	local active = nil;
 	if self.Skills[name] then
-		self.Skills[name]:SetCooldown(cooldown);
+		active = self.Skills[name]:SetCooldown(cooldown);
+		if not active then
+			self.activeCount = self.activeCount + 1;
+			self.activeList[name] = true;
+			if self.activeCount == 1 then
+				AddCallback(Updater, "Tick", self.UpdateHandler);
+			end
+		end
 	end
 end
 

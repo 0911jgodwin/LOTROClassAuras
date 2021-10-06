@@ -6,3 +6,5 @@ import "ExoPlugins.Auras.AuraTools.EffectBar";
 import "ExoPlugins.Auras.AuraTools.ResourceBar";
 import "ExoPlugins.Auras.AuraTools.DragBar";
 import "ExoPlugins.Auras.AuraTools.Highlight";
+import "ExoPlugins.Auras.AuraTools.NumericalDisplay";
+import "ExoPlugins.Auras.AuraTools.RadialCooldown";

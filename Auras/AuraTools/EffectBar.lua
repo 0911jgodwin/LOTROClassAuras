@@ -83,7 +83,6 @@ function EffectBar:SetInactive( name )
 		self.effects[name]:SetVisible(false);
 		self.activeCount = self.activeCount - 1;
 		if self.activeCount <= 0 then
-			--Updater.Unsubscribe(self);
 			RemoveCallback(Updater, "Tick", self.UpdateHandler);
 		end
 		self.SortEffects();

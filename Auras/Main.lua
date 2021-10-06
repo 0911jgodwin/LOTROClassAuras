@@ -16,6 +16,7 @@ playerEffects = player:GetEffects();
 Updater = Updater();
 Settings = nil;
 ChatHandler = Turbine.Chat;
+AGFont = ConfigureFont();
 
 if Turbine.PluginData.Load(Turbine.DataScope.Character, "AurasSettings") ~= nil then
 	Settings = LoadData(Turbine.DataScope.Character, "AurasSettings");
