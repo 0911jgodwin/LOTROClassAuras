@@ -77,6 +77,7 @@ function Effect:StartTimer(timer)
         self.DurationLabel:SetVisible(false);
         self.ShowDuration = false;
     else 
+        self.DurationLabel:SetText(self.duration);
         self.DurationLabel:SetVisible(true);
         self.ShowDuration = true;
     end

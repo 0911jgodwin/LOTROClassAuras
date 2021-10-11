@@ -61,7 +61,8 @@ end
 
 if playerClass == Turbine.Gameplay.Class.Beorning then
 
-	Turbine.Shell.WriteLine("Beorning");
+	import "ExoPlugins.Auras.ClassAuras.BeorningAuras";
+	Tools = _G.BeorningAuras(self);
 
 elseif playerClass == Turbine.Gameplay.Class.Brawler then
 

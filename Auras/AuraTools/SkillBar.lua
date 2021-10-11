@@ -109,6 +109,9 @@ function SkillBar:ToggleActive (name, bool, timer)
 end
 
 function SkillBar:Unload()
+	if self.activeCount > 0 then
+		RemoveCallback(Updater, "Tick", self.UpdateHandler);
+	end
 	for key, value in pairs(self.Skills) do
 		self.Skills[key]:Unload();
 	end

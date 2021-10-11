@@ -4,6 +4,7 @@ function RadialCooldown:Constructor(parent, frameWidth, frameHeight)
 
     self:SetParent(parent);
     self:SetSize(32, 32);
+    self:SetOpacity(0.75);
 
 	self.overlayStart = 0x41007E70;
     self.overlayEnd = 0x41007E35;
@@ -34,8 +35,7 @@ function RadialCooldown:Constructor(parent, frameWidth, frameHeight)
             self:SetWantsUpdates(false);
         end
         local progress = 1 - self.duration / self.maxDuration;
-        
-        self.RadialCooldown:SetBackground(self.overlayStart + math.floor(progress * self.steps));
+        self.RadialCooldown:SetBackground(math.max(self.overlayStart + math.floor(progress * self.steps), self.overlayEnd));
         self.lastTick = Turbine.Engine.GetGameTime();
     end
 end

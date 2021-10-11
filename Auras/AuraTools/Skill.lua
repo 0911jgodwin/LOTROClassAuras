@@ -8,7 +8,6 @@ function Skill:Constructor(parent, size, icon, responsive, display)
 
     self.background = icon;
     self.grayscaleBackground = icon;
-    self.tempBackground = self.background;
 
     self.display = display;
 
@@ -132,6 +131,7 @@ function  Skill:SetCooldown( cooldown )
         return true;
     end
 
+    self.CooldownText:SetText(self.duration);
     self.CooldownText:SetVisible(true);
     self.IconLabel:SetBackColor(Turbine.UI.Color(0.9,1,1,1));
     if self.display == false then
@@ -181,7 +181,9 @@ function Skill:Unload()
     self.BlackBorder:SetParent( nil );
     self.IconFrame:SetParent( nil );
     self.IconLabel:SetParent(nil);
+    self.CooldownText:SetParent(nil);
     self.Tint:SetParent(nil);
+    self.CooldownText:Unload();
     self.Highlight:Unload();
     self.RadialCooldown:Unload();
     self:SetParent(nil);

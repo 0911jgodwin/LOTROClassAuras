@@ -7,7 +7,7 @@ function ConfigureDefaultSettings()
 		["ShowSkills"] = true,
 	};
 	if playerClass == Turbine.Gameplay.Class.Beorning then
-
+		settings["Class"] = ConfigureBeorningSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Brawler then
 		settings["Class"] = ConfigureBrawlerSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Burglar then
@@ -31,6 +31,173 @@ function ConfigureDefaultSettings()
 	end
 	
 	return settings;
+end
+
+function ConfigureBeorningSettings()
+	
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
+
+	--Blue-only procs
+	local BlueProcs = {
+		["Guarded - Tier 1"] = {1091945024, 1, 1},
+		["Guarded - Tier 2"] = {1091945020, 1, 2},
+		["Guarded - Tier 3"] = {1091945022, 1, 3},
+		["Guarded - Tier 4"] = {1091945035, 1, 4},
+		["Guarded - Tier 5"] = {1091945040, 1, 5},
+		["Recuperate"] = {1091940911, 2, 0},
+	};
+
+	--Red-only procs
+	local RedProcs = {
+		["Lumber"] = {1091941775, 1, 1};
+	};
+
+	--Yellow-only procs
+	local YellowProcs = {
+		["Aiding Strike - Tier 1"] = {1091945028, 1, 3},
+		["Aiding Strike - Tier 2"] = {1091945017, 1, 3},
+		["Aiding Strike - Tier 3"] = {1091945029, 1, 3},
+		["Recuperate"] = {1091940911, 2, 0},
+	};
+
+
+	--This table basically just holds the icon size information for each row.
+	--If you want to make a particular row of quickslots large just adjust the value for the given row index
+	local SharedRowInfo = {
+		[1] = 38,
+		[2] = 32,
+		[3] = 38,
+	};
+
+	--Blue row-info settings
+	local BlueRowInfo = CopyTable(SharedRowInfo);
+	--Red row-info settings
+	local RedRowInfo = CopyTable(SharedRowInfo);
+	--Yellow row-info settings
+	local YellowRowInfo = CopyTable(SharedRowInfo);
+
+
+	--Data required for additional entries to these tables:
+	--[<Skill Name>] = {<image>, <x position>, <y position>, <responsive>, <visible off CD>}
+	--Responsive skills are those that are not always available, they may require you to progress through a skill chain to unlock
+	--for example in order to unlock Retaliation on Guardian you need a parry response effect to be active, therefore Retaliation is responsive.
+
+	--Blue-only skils
+	local BlueSkills = {
+		["Slash"] = {1091940897, 1, 1, false, true},
+		["Slam"] = {1091940917, 2, 1, true, true},
+		["Biting Edge"] = {1091940900, 3, 1, true, true},
+		["Guarded Attack"] = {1091940907, 4, 1, true, true},
+		["Thrash - Tier 1"] = {1091940889, 5, 1, false, true},
+		["Claw Swipe"] = {1091940902, 6, 1, true, true},
+		["Recuperate"] = {1091940911, 7, 1, true, true},
+		["Vicious Claws"] = {1091940919, 8, 1, false, true},
+
+		["Nature's Vengeance"] = {1091940914, 1, 2, false, true},
+		["Hearten"] = {1091940912, 2, 2, true, true},
+		["Ferocious Roar"] = {1091940918, 3, 2, true, true},
+		["Relentless Maul"] = {1091940908, 4, 2, true, true},
+		["Thunderous Roar"] = {1091952766, 5, 2, true, true},
+		["Vigilant Roar"] = {1091940895, 6, 2, true, true},
+		["Rending Blow"] = {1091940891, 7, 2, true, true},
+		["Bee Swarm"] = {1091940896, 8, 2, true, true},
+		["Counterattack"] = {1091945045, 9, 2, true, true},
+
+		["Thickened Hide"] = {1091940987, 1, 3, false, false},
+		["Sacrifice"] = {1091940913, 2, 3, false, false},
+		["Rush"] = {1091940899, 3, 3, false, false},
+		["Shake Free"] = {1091940916, 5, 3, false, false},
+		["Grisly Cry"] = {1091940898, 6, 3, false, false},
+		["Counter"] = {1091940905, 7, 3, false, false},
+
+	};
+
+	--Red-only skils
+	local RedSkills = {
+		["Slash"] = {1091940897, 1, 1, false, true},
+		["Slam"] = {1091940917, 2, 1, true, true},
+		["Biting Edge"] = {1091940900, 3, 1, true, true},
+		["Expose (Man)"] = {1091940901, 4, 1, false, true},
+		["Thrash - Tier 1"] = {1091940889, 5, 1, false, true},
+		["Bee Swarm"] = {1091940896, 6, 1, true, true},
+		["Vigilant Roar"] = {1091940895, 7, 1, true, true},
+		["Vicious Claws"] = {1091940919, 8, 1, false, true},
+
+		["Nature's Vengeance"] = {1091940914, 1, 2, false, true},
+		["Hearten"] = {1091940912, 2, 2, true, true},
+		["Ferocious Roar"] = {1091940918, 3, 2, true, true},
+		["Relentless Maul"] = {1091940908, 4, 2, true, true},
+		["Bash"] = {1091940909, 5, 2, true, true},
+		["Rending Blow"] = {1091940891, 6, 2, true, true},
+
+		["Call To Wild"] = {1091940988, 1, 3, false, false},
+		["Sacrifice"] = {1091940913, 2, 3, false, false},
+		["Rush"] = {1091940899, 3, 3, false, false},
+		["Shake Free"] = {1091940916, 5, 3, false, false},
+		["Grisly Cry"] = {1091940898, 6, 3, false, false},
+	};
+
+	--Yellow-only skils
+	local YellowSkills = {
+		["Slash"] = {1091940897, 1, 1, false, true},
+		["Slam"] = {1091940917, 2, 1, true, true},
+		["Biting Edge"] = {1091940900, 3, 1, true, true},
+		["Nature's Mend"] = {1091940921, 4, 1, true, true},
+		["Thrash - Tier 1"] = {1091940889, 5, 1, false, true},
+		["Encouraging Roar"] = {1091940904, 6, 1, true, true},
+		["Rejuvenating Bellow"] = {1091940990, 7, 1, true, true},
+		["Bee Swarm"] = {1091940896, 8, 1, true, true},
+
+		["Nature's Vengeance"] = {1091940914, 1, 2, false, true},
+		["Hearten"] = {1091940912, 2, 2, true, true},
+		["Ferocious Roar"] = {1091940918, 3, 2, true, true},
+		["Relentless Maul"] = {1091940908, 4, 2, true, true},
+		["Bash"] = {1091940909, 5, 2, true, true},
+		["Rending Blow"] = {1091940891, 6, 2, true, true},
+		["Vigilant Roar"] = {1091940895, 7, 2, true, true},
+		["Vicious Claws"] = {1091940919, 8, 2, false, true},
+
+		["Nature's Bond"] = {1091940986, 1, 3, false, false},
+		["Sacrifice"] = {1091940913, 2, 3, false, false},
+		["Rush"] = {1091940899, 3, 3, false, false},
+		["Shake Free"] = {1091940916, 5, 3, false, false},
+		["Grisly Cry"] = {1091940898, 6, 3, false, false},
+		["Overbearing"] = {1091952763, 7, 3, false, false},
+	};
+
+
+	local BlueData = {
+		["Procs"] = BlueProcs,
+		["Skills"] = {
+			["RowInfo"] = BlueRowInfo,
+			["SkillData"] = BlueSkills,
+		};
+	};
+
+	local RedData = {
+		["Procs"] = RedProcs,
+		["Skills"] = {
+			["RowInfo"] = RedRowInfo,
+			["SkillData"] = RedSkills,
+		};
+	};
+
+	local YellowData = {
+		["Procs"] = YellowProcs,
+		["Skills"] = {
+			["RowInfo"] = YellowRowInfo,
+			["SkillData"] = YellowSkills,
+		};
+	};
+
+	local Data = {
+		[1] = BlueData,
+		[2] = RedData,
+		[3] = YellowData,
+	};
+
+	return Data;
 end
 
 function ConfigureBrawlerSettings()

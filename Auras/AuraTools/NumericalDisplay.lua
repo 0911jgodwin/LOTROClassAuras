@@ -20,7 +20,7 @@ function NumericalDisplay:Constructor(parent, x, y, textScale)
 	self.firstDigit = Turbine.UI.Control();
     self.firstDigit:SetParent(self);
     self.firstDigit:SetSize(33, 47);
-    self.firstDigit:SetBackground("ExoPlugins/Auras/Resources/0.tga");
+    self.firstDigit:SetBackground(AGFont[0]);
     self.firstDigit:SetStretchMode(1);
     self.firstDigit:SetSize(33*self.textScale, 47*self.textScale)
     self.firstDigit:SetPosition(width/2-10, -(47*self.textScale/2));
@@ -30,6 +30,7 @@ function NumericalDisplay:Constructor(parent, x, y, textScale)
     self.secondDigit = Turbine.UI.Control();
     self.secondDigit:SetParent(self);
     self.secondDigit:SetSize(33, 47);
+    self.secondDigit:SetBackground(AGFont[0]);
     self.secondDigit:SetStretchMode(1);
     self.secondDigit:SetSize(33*self.textScale, 47*self.textScale)
     self.secondDigit:SetPosition(0, -(47*self.textScale/2));
@@ -39,6 +40,7 @@ function NumericalDisplay:Constructor(parent, x, y, textScale)
     self.thirdDigit = Turbine.UI.Control();
     self.thirdDigit:SetParent(self);
     self.thirdDigit:SetSize(33, 47);
+    self.thirdDigit:SetBackground(AGFont[0]);
     self.thirdDigit:SetStretchMode(1);
     self.thirdDigit:SetSize(33*self.textScale, 47*self.textScale)
     self.thirdDigit:SetPosition((width/3)*2, -(47*self.textScale/2));
@@ -78,16 +80,16 @@ function NumericalDisplay:SetText(number)
     if number > 60 then
         totalString = tostring(SecondsToMinutes(number));
         digits[1], digits[2], digits[3]=totalString:match('(%d)(%d)(%d)')
-        self:DoNumbers(self.firstDigit, digits[1], self.threeDigitLeftPos - self.colonOffset);
+        self:ScaleImage(self.firstDigit, digits[1], self.threeDigitLeftPos - self.colonOffset);
         self.colonContainer:SetVisible(true);
-        self:DoNumbers(self.secondDigit, digits[2], self.threeDigitMidPos + self.colonOffset);
-        self:DoNumbers(self.thirdDigit, digits[3], self.threeDigitRightPos + self.colonOffset);
+        self:ScaleImage(self.secondDigit, digits[2], self.threeDigitMidPos + self.colonOffset);
+        self:ScaleImage(self.thirdDigit, digits[3], self.threeDigitRightPos + self.colonOffset);
     elseif number > 9 then
         digits[1], digits[2]=totalString:match('(%d)(%d)')
-        self:DoNumbers(self.firstDigit, digits[1], self.twoDigitLeftPos);
-        self:DoNumbers(self.secondDigit, digits[2], self.twoDigitRightPos);
+        self:ScaleImage(self.firstDigit, digits[1], self.twoDigitLeftPos);
+        self:ScaleImage(self.secondDigit, digits[2], self.twoDigitRightPos);
     else
-        self:DoNumbers(self.secondDigit, totalString, self.threeDigitMidPos);
+        self:ScaleImage(self.secondDigit, totalString, self.threeDigitMidPos);
     end
 end
 
@@ -105,7 +107,7 @@ function NumericalDisplay:SetTextAlignment(alignment)
     end
 end
 
-function NumericalDisplay:DoNumbers(control, number, position)
+function NumericalDisplay:ScaleImage(control, number, position)
     control:SetStretchMode(0);
     control:SetSize(33, 47);
     control:SetBackground(AGFont[tonumber(number)]);
@@ -113,4 +115,17 @@ function NumericalDisplay:DoNumbers(control, number, position)
     control:SetSize(33*self.textScale, 47*self.textScale)
     control:SetVisible(true);
     control:SetLeft(position);
+end
+
+function NumericalDisplay:Unload()
+    self.firstDigit:SetParent(nil);
+    self.secondDigit:SetParent(nil);
+    self.thirdDigit:SetParent(nil);
+    self.colonContainer:SetParent(nil);
+    self.colon:SetParent(nil);
+    self.firstDigit = nil;
+    self.secondDigit = nil;
+    self.thirdDigit = nil;
+    self.colonContainer = nil;
+    self.colon = nil;
 end

@@ -24,14 +24,14 @@ function ResourceBar:Constructor(parent, width, height, pipCount, colours)
     for i = 1, pipCount, 1 do
         self.Pips[i] = Pip(self, pipWidth, 6)
         self.Pips[i]:SetPosition((width/2) - ((pipWidth/2) * pipCount) + ((i-1)*pipWidth), 12);
-        self.numbers[i] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/" .. i .. ".tga");
+        self.numbers[i] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/GU" .. i .. ".tga");
     end
-    self.numbers[0] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/" .. 0 .. ".tga");
+    self.numbers[0] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/GU" .. 0 .. ".tga");
     self.image = Turbine.UI.Control();
     self.image:SetParent(self);
-    self.image:SetSize(51, 51);
+    self.image:SetSize(51, 53);
     
-    self.image:SetBackground("ExoPlugins/Auras/Resources/0.tga");
+    self.image:SetBackground(self.numbers[0]);
     self.image:SetStretchMode(1);
     self.image:SetSize(18, 18)
     self.image:SetPosition(width/2-10, 6);
@@ -62,7 +62,7 @@ end
 function ResourceBar:SetImage(total)
     --Due to poor choice of fonts within the system and no capability to import fonts this plugin uses custom images for each number.
     self.image:SetStretchMode(0);
-    self.image:SetSize(51, 51);
+    self.image:SetSize(51, 53);
     self.image:SetBackground(self.numbers[total]);
     self.image:SetStretchMode(1);
     self.image:SetSize(18, 18)
@@ -140,15 +140,19 @@ function Pip:Unload()
 end
 
 _G.VitalBar = class( Turbine.UI.Control );
-function VitalBar:Constructor(parent, width, height, pipCount, colours)
+function VitalBar:Constructor(parent, width, height, textScale)
     Turbine.UI.Control.Constructor( self );
     self:SetParent(parent);
     self:SetSize(width, 24);
     self:SetZOrder(100);
     self:SetMouseVisible(false);
     self:SetVisible(true);
+    self.textScale = textScale;
 
-    self.colours = colours;
+    self.numbers = {};
+    for i = 0, 9, 1 do
+        self.numbers[i] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/GU" .. i .. ".tga");
+    end
 
     --Example settings. Requires a value stored at 0 to be the default colour, other values are break points that tell it to switch to a new colour
     --In this example 0-2 pips are blue, 3-8 pips are yellow, and 9 pips display as red.
@@ -159,111 +163,143 @@ function VitalBar:Constructor(parent, width, height, pipCount, colours)
     [9] = Turbine.UI.Color(0.77, 0.12, 0.23),
     };]]--
 
-    self.pipCount = 1;
-    self.Pips = {};
-    local pipWidth = width/1;
-    for i = 1, 1, 1 do
-        self.Pips[i] = Pip(self, pipWidth, 10)
-        self.Pips[i]:SetPosition((width/2) - ((pipWidth/2) * 1) + ((i-1)*pipWidth), 12);
-    end
-
     --Oh boy, it's Kerning time
     self.Kerning = {
-        ["0"] = {1, 0},
-        ["1"] = {2, 3},
-        ["2"] = {1, 0},
-        ["3"] = {1, 0},
-        ["4"] = {1, -2},
-        ["5"] = {1, 0},
-        ["6"] = {0, 1},
-        ["7"] = {1, -1},
-        ["8"] = {1, 0},
-        ["9"] = {1, 0},
+        ["0"] = {1, 1},
+        ["1"] = {8*self.textScale, 10*self.textScale},
+        ["2"] = {3*self.textScale, 3*self.textScale},
+        ["3"] = {2*self.textScale, 3*self.textScale},
+        ["4"] = {1, 1},
+        ["5"] = {2*self.textScale, 3*self.textScale},
+        ["6"] = {2*self.textScale, 3*self.textScale},
+        ["7"] = {4*self.textScale, 3*self.textScale},
+        ["8"] = {2*self.textScale, 3*self.textScale},
+        ["9"] = {3*self.textScale, 3*self.textScale},
     };
+    self.threeDigitMidPos = width/2 - (51*self.textScale / 2);
+    self.threeDigitLeftPos = self.threeDigitMidPos - (51*self.textScale);
+    self.threeDigitRightPos = self.threeDigitMidPos + (51*self.textScale);
 
-    self.threeDigitMid = Turbine.UI.Control();
-    self.threeDigitMid:SetParent(self);
-    self.threeDigitMid:SetSize(51, 51);
-    self.threeDigitMid:SetBackground("ExoPlugins/Auras/Resources/0.tga");
-    self.threeDigitMid:SetStretchMode(1);
-    self.threeDigitMid:SetSize(18, 18)
-    self.threeDigitMid:SetPosition(width/2-10, 8);
-    self.threeDigitMid:SetStretchMode(2);
-    self.threeDigitMid:SetMouseVisible(false);
+    self.twoDigitLeftPos = width/2 - (51*self.textScale);
+    self.twoDigitRightPos = width/2;
 
-    self.threeDigitLeft = Turbine.UI.Control();
-    self.threeDigitLeft:SetParent(self);
-    self.threeDigitLeft:SetSize(51, 51);
-    self.threeDigitLeft:SetBackground("ExoPlugins/Auras/Resources/0.tga");
-    self.threeDigitLeft:SetStretchMode(1);
-    self.threeDigitLeft:SetSize(18, 18)
-    self.threeDigitLeft:SetPosition(width/2-28, 8);
-    self.threeDigitLeft:SetStretchMode(2);
-    self.threeDigitLeft:SetMouseVisible(false);
+    self.bar = VitalDisplay(self, width, 6, Turbine.UI.Color(1, 0.4, 0));
+    self.bar:SetTop(((53*self.textScale)/2)-(self.bar:GetHeight()/2));
 
-    self.threeDigitRight = Turbine.UI.Control();
-    self.threeDigitRight:SetParent(self);
-    self.threeDigitRight:SetSize(51, 51);
-    self.threeDigitRight:SetBackground("ExoPlugins/Auras/Resources/0.tga");
-    self.threeDigitRight:SetStretchMode(1);
-    self.threeDigitRight:SetSize(18, 18)
-    self.threeDigitRight:SetPosition(width/2+8, 8);
-    self.threeDigitRight:SetStretchMode(2);
-    self.threeDigitRight:SetMouseVisible(false);
+    self.firstDigit = Turbine.UI.Control();
+    self.firstDigit:SetParent(self);
+    self.firstDigit:SetSize(51, 53);
+    self.firstDigit:SetBackground(self.numbers[0]);
+    self.firstDigit:SetStretchMode(1);
+    self.firstDigit:SetSize(51*self.textScale, 53*self.textScale);
+    self.firstDigit:SetPosition(width/2-10, 0);
+    self.firstDigit:SetStretchMode(2);
+    self.firstDigit:SetMouseVisible(false);
 
-    self.twoDigitLeft = Turbine.UI.Control();
-    self.twoDigitLeft:SetParent(self);
-    self.twoDigitLeft:SetSize(51, 51);
-    self.twoDigitLeft:SetBackground("ExoPlugins/Auras/Resources/0.tga");
-    self.twoDigitLeft:SetStretchMode(1);
-    self.twoDigitLeft:SetSize(18, 18)
-    self.twoDigitLeft:SetPosition(width/2-16, 8);
-    self.twoDigitLeft:SetStretchMode(2);
-    self.twoDigitLeft:SetMouseVisible(false);
+    self.secondDigit = Turbine.UI.Control();
+    self.secondDigit:SetParent(self);
+    self.secondDigit:SetSize(51, 53);
+    self.secondDigit:SetBackground(self.numbers[0]);
+    self.secondDigit:SetStretchMode(1);
+    self.secondDigit:SetSize(51*self.textScale, 53*self.textScale);
+    self.secondDigit:SetPosition(0, 0);
+    self.secondDigit:SetStretchMode(2);
+    self.secondDigit:SetMouseVisible(false);
 
-    self.twoDigitRight = Turbine.UI.Control();
-    self.twoDigitRight:SetParent(self);
-    self.twoDigitRight:SetSize(51, 51);
-    self.twoDigitRight:SetBackground("ExoPlugins/Auras/Resources/0.tga");
-    self.twoDigitRight:SetStretchMode(1);
-    self.twoDigitRight:SetSize(18, 18)
-    self.twoDigitRight:SetPosition(width/2, 8);
-    self.twoDigitRight:SetStretchMode(2);
-    self.twoDigitRight:SetMouseVisible(false);
+    self.thirdDigit = Turbine.UI.Control();
+    self.thirdDigit:SetParent(self);
+    self.thirdDigit:SetSize(51, 53);
+    self.thirdDigit:SetBackground(self.numbers[0]);
+    self.thirdDigit:SetStretchMode(1);
+    self.thirdDigit:SetSize(51*self.textScale, 53*self.textScale);
+    self.thirdDigit:SetPosition((width/3)*2, 0);
+    self.thirdDigit:SetStretchMode(2);
+    self.thirdDigit:SetMouseVisible(false);
 end
 
 function VitalBar:SetTotal(total)
     self:SetImage(total);
+    self.bar:SetValue(total);
 end
 
-function VitalBar:SetImage(total)
+function VitalBar:SetImage(number)
     --Due to poor choice of fonts within the system and no capability to import fonts this plugin uses custom images for each number.
     local digits = {};
-    local totalString = tostring(total);
-    self.twoDigitRight:SetVisible(false);
-    self.twoDigitLeft:SetVisible(false);
-    self.threeDigitLeft:SetVisible(false);
-    self.threeDigitMid:SetVisible(false);
-    self.threeDigitRight:SetVisible(false);
-    if total == 100 then
-        self:DoNumbers(self.threeDigitLeft, "1", width/2-28 + self.Kerning["1"][2]);
-        self:DoNumbers(self.threeDigitMid, "0", width/2-10);
-        self:DoNumbers(self.threeDigitRight, "0", width/2+8);
-    elseif total > 9 then
+    local totalString = tostring(number);
+    self.firstDigit:SetVisible(false);
+    self.secondDigit:SetVisible(false);
+    self.thirdDigit:SetVisible(false);
+    
+    if number > 99 then
+        digits[1], digits[2], digits[3]=totalString:match('(%d)(%d)(%d)')
+        self:ScaleImage(self.firstDigit, digits[1], self.threeDigitLeftPos + (self.Kerning[digits[1]][2] + self.Kerning[digits[2]][1]));
+        self:ScaleImage(self.secondDigit, digits[2], self.threeDigitMidPos);
+        self:ScaleImage(self.thirdDigit, digits[3], self.threeDigitRightPos -(self.Kerning[digits[3]][1] + self.Kerning[digits[2]][2]));
+    elseif number > 9 then
         digits[1], digits[2]=totalString:match('(%d)(%d)')
-        self:DoNumbers(self.twoDigitLeft, digits[1], width/2-16 + self.Kerning[digits[1]][2]);
-        self:DoNumbers(self.twoDigitRight, digits[2], width/2 - self.Kerning[digits[2]][1]);
+        self:ScaleImage(self.firstDigit, digits[1], self.twoDigitLeftPos + (self.Kerning[digits[1]][2]));
+        self:ScaleImage(self.secondDigit, digits[2], self.twoDigitRightPos - (self.Kerning[digits[2]][1]));
     else
-        self:DoNumbers(self.threeDigitMid, totalString, width/2-10);
+        self:ScaleImage(self.secondDigit, totalString, self.threeDigitMidPos);
     end
 end
 
-function VitalBar:DoNumbers(control, number, position)
+function VitalBar:ScaleImage(control, number, position)
     control:SetStretchMode(0);
-    control:SetSize(51, 51);
-    control:SetBackground("ExoPlugins/Auras/Resources/" .. number .. ".tga");
+    control:SetSize(51, 53);
+    control:SetBackground(self.numbers[tonumber(number)]);
     control:SetStretchMode(1);
-    control:SetSize(18, 18)
+    control:SetSize(51*self.textScale, 53*self.textScale)
     control:SetVisible(true);
     control:SetLeft(position);
+end
+
+function VitalBar:Unload()
+    self.firstDigit:SetVisible(false);
+    self.secondDigit:SetVisible(false);
+    self.thirdDigit:SetVisible(false);
+    self.firstDigit:SetParent(nil);
+    self.secondDigit:SetParent(nil);
+    self.thirdDigit:SetParent(nil);
+    self.numbers = {};
+    self.Kerning = {};
+    self:SetParent(nil);
+	self = nil;
+end
+
+VitalDisplay = class( Turbine.UI.Control );
+function VitalDisplay:Constructor(parent, width, height, color)
+    Turbine.UI.Control.Constructor( self );
+    self.color = color;
+    self:SetParent(parent);
+    self:SetSize(width, height);
+    self:SetZOrder(100);
+    self:SetMouseVisible(false);
+    self:SetBackColor(Turbine.UI.Color(1, 0, 0, 0));
+    self:SetVisible(true);
+
+    self.BackgroundBar = Turbine.UI.Control();
+    self.BackgroundBar:SetParent(self);
+    self.BackgroundBar:SetSize(width - 2, height - 2);
+    self.BackgroundBar:SetPosition(1, 1);
+    self.BackgroundBar:SetMouseVisible(false);
+    self.BackgroundBar:SetBackColor(Turbine.UI.Color(0.75, 0.025, 0.025, 0.025));
+
+    self.CurrentBar = Turbine.UI.Control();
+    self.CurrentBar:SetParent(self);
+    self.CurrentBar:SetSize(width - 2, height - 2);
+    self.CurrentBar:SetPosition(1, 1);
+    self.CurrentBar:SetMouseVisible(false);
+    self.CurrentBar:SetBackColor(self.color);
+end
+
+function VitalDisplay:SetValue(number)
+    local currentWidth = number/100 * self.BackgroundBar:GetWidth();
+
+    self.CurrentBar:SetWidth(math.ceil(currentWidth));
+    if number <= 40 then
+        self.CurrentBar:SetBackColor(Turbine.UI.Color(1, 0.12, 0.12));
+    else
+        self.CurrentBar:SetBackColor(self.color);
+    end
 end
