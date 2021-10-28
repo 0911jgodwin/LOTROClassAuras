@@ -1,8 +1,14 @@
 function ConfigureDefaultSettings()
+	screenWidth, screenHeight = Turbine.UI.Display:GetSize();
 	local settings = {};
 	settings["General"] = {
 		["Width"] = 312,
-		["Position"] = {200, 200},
+		["Position"] = {((screenWidth/2)-156)/screenWidth, (screenHeight/1.6)/screenHeight},
+		["Version"] = "V." .. plugin:GetVersion(),
+		["Buffs"] = {
+			["Position"] = {((screenWidth/2)-412)/screenWidth, (screenHeight/1.7)/screenHeight},
+			["Width"] = 256,
+		},
 		["Debug"] = false,
 		["ShowSkills"] = true,
 	};
@@ -34,6 +40,25 @@ function ConfigureDefaultSettings()
 end
 
 function ConfigureBeorningSettings()
+
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Ferocious Roar"] = 1091940918,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+	BlueBuffs["Thickened Hide"] = 1091940987;
+
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+	RedBuffs["Call To Wild"] = 1091940988;
+
+	--Yellow-only buffs
+	local YellowBuffs = CopyTable(SharedBuffTable);
 	
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
@@ -172,7 +197,8 @@ function ConfigureBeorningSettings()
 		["Skills"] = {
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
-		};
+		},
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -180,7 +206,8 @@ function ConfigureBeorningSettings()
 		["Skills"] = {
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
-		};
+		},
+		["Buffs"] = RedBuffs,
 	};
 
 	local YellowData = {
@@ -188,7 +215,8 @@ function ConfigureBeorningSettings()
 		["Skills"] = {
 			["RowInfo"] = YellowRowInfo,
 			["SkillData"] = YellowSkills,
-		};
+		},
+		["Buffs"] = YellowBuffs,
 	};
 
 	local Data = {
@@ -201,44 +229,66 @@ function ConfigureBeorningSettings()
 end
 
 function ConfigureBrawlerSettings()
-	
-	--Shared procs that all lines are interested in
+
+	--Shared buffs that all lines are interested in
 	--Data required for additional entries to this table:
-	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
-	local SharedProcTable = {
-		
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Get Serious"] = 1092628691,
+		["Feint"] = 1092693208,
+		["Weather Blows"] = 1090541178,
 	};
 
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+	BlueBuffs["Iron Will"] = 1092598111;
+	BlueBuffs["Song-brother's Call"] = 1091831453;
+	BlueBuffs["Plant Feet - Tier 1"] = 1091916300;
+	BlueBuffs["Plant Feet - Tier 2"] = 1091916300;
+	BlueBuffs["Plant Feet - Tier 3"] = 1091916300;
+	BlueBuffs["Plant Feet - Tier 4"] = 1091916300;
+	BlueBuffs["Plant Feet - Tier 5"] = 1091916300;
+	BlueBuffs["Bracing Guard Active"] = 1092693316;
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+	RedBuffs["Joy of Battle - Damage"] = 1091463400;
+	RedBuffs["Battle Fury"] = 1091941793;
+	
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
 	--Blue-only procs
-	local BlueProcs = CopyTable(SharedProcTable);
-	BlueProcs["DNT - Mettle Shield"] = {1090552382, 0, 0};
-	BlueProcs["Innate Strength: Intimidating Presence - Tier 1"] = {1092693311, 1, 1};
-	BlueProcs["Innate Strength: Intimidating Presence - Tier 2"] = {1092693311, 1, 2};
-	BlueProcs["Innate Strength: Intimidating Presence - Tier 3"] = {1092693311, 1, 3};
-	BlueProcs["Innate Strength: Intimidating Presence - Tier 4"] = {1092693311, 1, 4};
-	BlueProcs["Innate Strength: Inner Resilience - Tier 1"] = {1092693310, 2, 1};
-	BlueProcs["Innate Strength: Inner Resilience - Tier 2"] = {1092693310, 2, 2};
-	BlueProcs["Innate Strength: Inner Resilience - Tier 3"] = {1092693310, 2, 3};
-	BlueProcs["Innate Strength: Inner Resilience - Tier 4"] = {1092693310, 2, 4};
-	BlueProcs["Innate Strength: Deflecting Technique - Tier 1"] = {1092693309, 3, 1};
-	BlueProcs["Innate Strength: Deflecting Technique - Tier 2"] = {1092693309, 3, 2};
-	BlueProcs["Innate Strength: Deflecting Technique - Tier 3"] = {1092693309, 3, 3};
-	BlueProcs["Innate Strength: Deflecting Technique - Tier 4"] = {1092693309, 3, 4};
+	local BlueProcs = {
+		["DNT - Mettle Shield"] = {1090552382, 0, 0},
+		["Innate Strength: Inner Resilience - Tier 1"] = {1092687523, 1, 1},
+		["Innate Strength: Inner Resilience - Tier 2"] = {1092687523, 1, 2},
+		["Innate Strength: Inner Resilience - Tier 3"] = {1092687523, 1, 3},
+		["Innate Strength: Inner Resilience - Tier 4"] = {1092687523, 1, 4},
+		["Innate Strength: Intimidating Presence - Tier 1"] = {1092687522, 2, 1},
+		["Innate Strength: Intimidating Presence - Tier 2"] = {1092687522, 2, 2},
+		["Innate Strength: Intimidating Presence - Tier 3"] = {1092687522, 2, 3},
+		["Innate Strength: Intimidating Presence - Tier 4"] = {1092687522, 2, 4},
+		["Innate Strength: Deflecting Technique - Tier 1"] = {1092687524, 3, 1},
+		["Innate Strength: Deflecting Technique - Tier 2"] = {1092687524, 3, 2},
+		["Innate Strength: Deflecting Technique - Tier 3"] = {1092687524, 3, 3},
+		["Innate Strength: Deflecting Technique - Tier 4"] = {1092687524, 3, 4},
+	};
 
 	--Red-only procs
-	local RedProcs = CopyTable(SharedProcTable);
-	RedProcs["Innate Strength: Precision - Tier 1"] = {1092693258, 1, 1};
-	RedProcs["Innate Strength: Precision - Tier 2"] = {1092693258, 1, 2};
-	RedProcs["Innate Strength: Precision - Tier 3"] = {1092693258, 1, 3};
-	RedProcs["Innate Strength: Precision - Tier 4"] = {1092693258, 1, 4};
-	RedProcs["Innate Strength: Raw Power - Tier 1"] = {1092693259, 2, 1};
-	RedProcs["Innate Strength: Raw Power - Tier 2"] = {1092693259, 2, 2};
-	RedProcs["Innate Strength: Raw Power - Tier 3"] = {1092693259, 2, 3};
-	RedProcs["Innate Strength: Raw Power - Tier 4"] = {1092693259, 2, 4};
-	RedProcs["Innate Strength: Finesse - Tier 1"] = {1090539704, 3, 1};
-	RedProcs["Innate Strength: Finesse - Tier 2"] = {1090539704, 3, 2};
-	RedProcs["Innate Strength: Finesse - Tier 3"] = {1090539704, 3, 3};
-	RedProcs["Innate Strength: Finesse - Tier 4"] = {1090539704, 3, 4};
+	local RedProcs = {
+		["Innate Strength: Precision - Tier 1"] = {1092687523, 1, 1},
+		["Innate Strength: Precision - Tier 2"] = {1092687523, 1, 2},
+		["Innate Strength: Precision - Tier 3"] = {1092687523, 1, 3},
+		["Innate Strength: Precision - Tier 4"] = {1092687523, 1, 4},
+		["Innate Strength: Raw Power - Tier 1"] = {1092687522, 2, 1},
+		["Innate Strength: Raw Power - Tier 2"] = {1092687522, 2, 2},
+		["Innate Strength: Raw Power - Tier 3"] = {1092687522, 2, 3},
+		["Innate Strength: Raw Power - Tier 4"] = {1092687522, 2, 4},
+		["Innate Strength: Finesse - Tier 1"] = {1092687524, 3, 1},
+		["Innate Strength: Finesse - Tier 2"] = {1092687524, 3, 2},
+		["Innate Strength: Finesse - Tier 3"] = {1092687524, 3, 3},
+		["Innate Strength: Finesse - Tier 4"] = {1092687524, 3, 4},
+	};
 
 
 	--This table basically just holds the icon size information for each row.
@@ -264,24 +314,23 @@ function ConfigureBrawlerSettings()
 		["Low Strike"] = {1092595470, 1, 1, false, true},
 		["Sinister Cross"] = {1092595471, 2, 1, false, true},
 		["Dextrous Hook"] = {1092595472, 3, 1, false, true},
-		["Backhand Clout"] = {1092598117, 5, 1, true, true},
-		["Strike Towards the Sky"] = {1092686889, 6, 1, true, true},
-		["Hurl Object"] = {1092687520, 7, 1, false, true},
-		["Fulgurant Strike"] = {1091509864, 8, 1, true, true},
+
+		["Knee Strike"] = {1092598108 , 5, 1, true, true},
+		["Hurl Object"] = {1092687520, 6, 1, false, true},
+		["Helm-crusher"] = {1092685337, 7, 1, true, true},
+		["Fulgurant Strike"] = {1091509864, 8, 1, false, true},
 		
-		["Quick Feint"] = {1092598114, 1, 2, false, true},
-		["Overhand Smash"] = {1092598116, 3, 2, true, true},
-		["Knee Strike"] = {1092598108 , 5, 2, true, true},
-		["Helm-crusher"] = {1092685337, 6, 2, true, true},
-		["Helm's Hammer"] = {1092598113, 7, 2, false, true},
-		["Mighty Upheaval"] = {1092598109, 8, 2, true, true},
-		["Fist of the Valar"] = {1092695530, 9, 2, true, true},
-		["Get Serious"] = {1092628691, 10, 2, false, true},
+		["Backhand Clout"] = {1092598117, 1, 2, true, true},
+		["Strike Towards the Sky"] = {1092686889, 2, 2, true, true},
+		["Quick Feint"] = {1092598114, 3, 2, false, true},		
+
+		["Get Serious"] = {1092628691, 5, 2, false, true},
+		["Mighty Upheaval"] = {1092598109, 7, 2, true, true},
+		["Helm's Hammer"] = {1092598113, 8, 2, false, true},		
 		
 		["Follow Me!"] = {1092686890, 1, 3, false, false},
 		["Strike as One!"] = {1091831431, 2, 3, false, false},
 		["Joy of Battle - Damage"] = {1091463400, 3, 3, false, false},
-		["Battle Fury"] = {1092638683, 4, 3, false, false},
 		["Share Innate Strength: Quickness"] = {1092687522, 5, 3, false, false},
 		["Share Innate Strength: Heavy"] = {1092687523, 6, 3, false, false},
 		["Share Innate Strength: Balance"] = {1092687524, 7, 3, false, false},
@@ -296,13 +345,14 @@ function ConfigureBrawlerSettings()
 	local BlueSkills = CopyTable(SharedSkills);
 	BlueSkills["Come At Me"] = {1092598121, 4, 2, false, true};
 	BlueSkills["Brash Invitation"] = {1092598119, 4, 1, false, true};
-	BlueSkills["Gut Punch"] = {1092692924, 2, 2, true, true};
+	BlueSkills["Gut Punch"] = {1092692924, 6, 2, true, true};
 
 	--Red-only skils
 	local RedSkills = CopyTable(SharedSkills);
-	RedSkills["Pummel"] = {1092598112, 4, 2, true, true};
 	RedSkills["Shattering Fist"] = {1092598120, 4, 1, true, true};
-	RedSkills["First Strike"] = {1091805264, 2, 2, false, true};
+	RedSkills["First Strike"] = {1091805264, 4, 2, false, true};
+	RedSkills["Fist of the Valar"] = {1092695530, 6, 2, true, true};
+	RedSkills["Battle Fury"] = {1092695531, 4, 3, false, false};
 
 
 
@@ -312,6 +362,7 @@ function ConfigureBrawlerSettings()
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
 		};
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -320,6 +371,7 @@ function ConfigureBrawlerSettings()
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
 		};
+		["Buffs"] = RedBuffs,
 	};
 
 
@@ -333,6 +385,29 @@ end
 
 function ConfigureCaptainSettings()
 	
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Time of Need"] = 1091037688,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+	BlueBuffs["To Arms (Fellowship Shield-brother)"] = 1091659766;
+	BlueBuffs["Song-brother's Call"] = 1091831453;
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+	RedBuffs["To Arms (Blade-brother)"] = 1091037682;
+	RedBuffs["Blade-brother's Call"] = 1091840431;
+
+	--Yellow-only buffs
+	local YellowBuffs = CopyTable(SharedBuffTable);
+	YellowBuffs["To Arms (Shield-brother)"] = 1091659765;
+	YellowBuffs["Shield-brother's Call"] = 1091831458;
+
+
 	--Shared procs that all lines are interested in
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
@@ -444,6 +519,7 @@ function ConfigureCaptainSettings()
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
 		};
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -452,6 +528,7 @@ function ConfigureCaptainSettings()
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
 		};
+		["Buffs"] = RedBuffs,
 	};
 
 	local YellowData = {
@@ -460,6 +537,7 @@ function ConfigureCaptainSettings()
 			["RowInfo"] = YellowRowInfo,
 			["SkillData"] = YellowSkills,
 		};
+		["Buffs"] = YellowBuffs,
 	};
 
 	local Data = {
@@ -472,6 +550,22 @@ function ConfigureCaptainSettings()
 end
 
 function ConfigureChampionSettings()
+
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Fight On Critical Rating"] = 1090539699,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+
+	--Yellow-only buffs
+	local YellowBuffs = CopyTable(SharedBuffTable);
 	
 	--Shared procs that all lines are interested in
 	--Data required for additional entries to this table:
@@ -571,6 +665,7 @@ function ConfigureChampionSettings()
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
 		};
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -579,6 +674,7 @@ function ConfigureChampionSettings()
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
 		};
+		["Buffs"] = RedBuffs,
 	};
 
 	local YellowData = {
@@ -587,6 +683,7 @@ function ConfigureChampionSettings()
 			["RowInfo"] = YellowRowInfo,
 			["SkillData"] = YellowSkills,
 		};
+		["Buffs"] = YellowBuffs,
 	};
 
 	local Data = {
@@ -599,6 +696,22 @@ function ConfigureChampionSettings()
 end
 
 function ConfigureGuardianSettings()
+
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Warrior's Heart"] = 1090541182,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+
+	--Yellow-only buffs
+	local YellowBuffs = CopyTable(SharedBuffTable);
 	
 	--Shared procs that all lines are interested in
 	--Data required for additional entries to this table:
@@ -721,6 +834,7 @@ function ConfigureGuardianSettings()
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
 		};
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -729,6 +843,7 @@ function ConfigureGuardianSettings()
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
 		};
+		["Buffs"] = RedBuffs,
 	};
 
 	local YellowData = {
@@ -737,6 +852,7 @@ function ConfigureGuardianSettings()
 			["RowInfo"] = YellowRowInfo,
 			["SkillData"] = YellowSkills,
 		};
+		["Buffs"] = YellowBuffs,
 	};
 
 	local Data = {
@@ -750,6 +866,22 @@ end
 
 
 function ConfigureHunterSettings()
+
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Burn Hot"] = 1091456474,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+
+	--Yellow-only buffs
+	local YellowBuffs = CopyTable(SharedBuffTable);
 	
 	--Shared procs that all lines are interested in
 	--Data required for additional entries to this table:
@@ -843,6 +975,7 @@ function ConfigureHunterSettings()
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
 		};
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -851,6 +984,7 @@ function ConfigureHunterSettings()
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
 		};
+		["Buffs"] = RedBuffs,
 	};
 
 	local YellowData = {
@@ -859,6 +993,7 @@ function ConfigureHunterSettings()
 			["RowInfo"] = YellowRowInfo,
 			["SkillData"] = YellowSkills,
 		};
+		["Buffs"] = YellowBuffs,
 	};
 
 	local Data = {
@@ -871,6 +1006,23 @@ function ConfigureHunterSettings()
 end
 
 function ConfigureRunekeeperSettings()
+
+
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Armour of the Elements"] = 1091454154,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+
+	--Red-only buffs
+	local RedBuffs = CopyTable(SharedBuffTable);
+
+	--Yellow-only buffs
+	local YellowBuffs = CopyTable(SharedBuffTable);
 	
 	--Data required for additional entries to the proc tables:
 	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
@@ -1003,6 +1155,7 @@ function ConfigureRunekeeperSettings()
 			["RowInfo"] = BlueRowInfo,
 			["SkillData"] = BlueSkills,
 		};
+		["Buffs"] = BlueBuffs,
 	};
 
 	local RedData = {
@@ -1011,6 +1164,7 @@ function ConfigureRunekeeperSettings()
 			["RowInfo"] = RedRowInfo,
 			["SkillData"] = RedSkills,
 		};
+		["Buffs"] = RedBuffs,
 	};
 
 	local YellowData = {
@@ -1019,6 +1173,7 @@ function ConfigureRunekeeperSettings()
 			["RowInfo"] = YellowRowInfo,
 			["SkillData"] = YellowSkills,
 		};
+		["Buffs"] = YellowBuffs,
 	};
 
 	local Data = {

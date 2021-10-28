@@ -95,8 +95,8 @@ function GuardianAuras:HandleResponseState( effect, bool )
 end
 
 function GuardianAuras:ConfigureBars()
-
-	self:SetPosition(Settings["General"]["Position"][1], Settings["General"]["Position"][2]);
+	local screenWidth, screenHeight = Turbine.UI.Display:GetSize();
+	self:SetPosition(Settings["General"]["Position"][1]*screenWidth, Settings["General"]["Position"][2]*screenHeight);
 
     self:SetSize(Settings["General"]["Width"], 200);
 	width = self:GetWidth();
@@ -104,6 +104,7 @@ function GuardianAuras:ConfigureBars()
 	self.RowInfo = Settings["Class"][playerRole]["Skills"]["RowInfo"];
 	self.Skills = Settings["Class"][playerRole]["Skills"]["SkillData"];
 	self.ProcTable = Settings["Class"][playerRole]["Procs"];
+	self.BuffEffects = Settings["Class"][playerRole]["Buffs"];
 
 	local rowCount = 0;
 	for key, value in pairs(self.RowInfo) do
@@ -115,8 +116,16 @@ function GuardianAuras:ConfigureBars()
 	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
 	self.SkillBar:SetPosition(0, 51);
 
+	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, 32);
+	self.BuffsBar:SetPosition(Settings["General"]["Buffs"]["Position"][1]*screenWidth, Settings["General"]["Buffs"]["Position"][2]*screenHeight);
+	self.BuffDragBar = DragBar( self.BuffsBar, "Buffs" );
+
 	for key, value in pairs(self.ProcTable) do
 		self.ProcBar:AddEffect(key, Effect(self.ProcBar, self.ProcBar:GetIconSize(), value[1], value[3]), value[2]);
+	end
+
+	for key, value in pairs(self.BuffEffects) do
+		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, 32, value, 0));
 	end
 
 	if playerRole == 1 then
@@ -178,6 +187,11 @@ function GuardianAuras:ConfigureCallbacks()
 			self.fortBar:SetTotal(self.Fortifications[effectName]);
 		end
 
+		if self.BuffEffects[effectName] then
+			self.EffectIDs[effectName] = effect:GetID();
+			self.BuffsBar:SetActive(effectName, effect:GetDuration())
+		end
+
 		if self.ProcTable[effectName] then
 			self.EffectIDs[effectName] = effect:GetID();
 			self.ProcBar:SetActive(effectName, effect:GetDuration());
@@ -199,6 +213,10 @@ function GuardianAuras:ConfigureCallbacks()
 
 			if self.ChainEffects[effectName] ~= nil and effect:GetID() == self.EffectIDs[effectName] then
 				self:HandleResponseState(effectName, false);
+			end
+
+			if self.BuffEffects[effectName] and effect:GetID() == self.EffectIDs[effectName] then
+				self.BuffsBar:SetInactive(effectName);
 			end
 
 			if effectName == self.lastTier then
@@ -273,9 +291,10 @@ function GuardianAuras:Unload()
 end
 
 function GuardianAuras:SavePosition()
+	local screenWidth, screenHeight = Turbine.UI.Display:GetSize();
 	Data = {
-		[1] = self:GetLeft(),
-		[2] = self:GetTop(),
+		[1] = self:GetLeft()/screenWidth,
+		[2] = self:GetTop()/screenHeight,
 	};
 
 	Settings["General"]["Position"] = Data;

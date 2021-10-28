@@ -1,3 +1,4 @@
+import "Turbine";
 import "Turbine.Gameplay";
 import "Turbine.UI";
 import "Turbine.UI.Lotro";
@@ -20,6 +21,10 @@ AGFont = ConfigureFont();
 
 if Turbine.PluginData.Load(Turbine.DataScope.Character, "AurasSettings") ~= nil then
 	Settings = LoadData(Turbine.DataScope.Character, "AurasSettings");
+	if Settings["General"]["Version"] ~= "V." .. plugin:GetVersion() then
+		import "ExoPlugins.Auras.VersionUpdate";
+		UpdateToLatestVersion(Settings["General"]["Version"]);
+	end
 else
 	import "ExoPlugins.Auras.DefaultSettings";
 	Settings = ConfigureDefaultSettings();

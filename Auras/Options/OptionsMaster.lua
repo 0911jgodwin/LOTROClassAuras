@@ -20,20 +20,20 @@ function OptionsMaster:Constructor()
 	local generalOptions = OptionsGeneral();
 	local procOptions = OptionsProcs();
 	local skillOptions = OptionsSkills();
+	local buffOptions = OptionsBuffs();
 	self:AddTab("General", generalOptions);
 	self:AddTab("Procs", procOptions);
 	self:AddTab("Skills", skillOptions);
+	self:AddTab("Buffs", buffOptions);
 
 	self.resetTime = nil;
 	self.ReloadHandler = function(delta)
 			if self.resetTime ~= nil then
 				if self.resetTime < Turbine.Engine.GetGameTime() then
 					playerRole = GetRole();
-					--for i=1, self.tabCount, 1 do
-						--self.tabs[i]:Reload();
-					--end
 					self.tabs[2]:Reload();
 					self.tabs[3]:Reload();
+					self.tabs[4]:Reload();
 					self.resetTime = nil;
 					RemoveCallback(Updater, "Tick", self.ReloadHandler);
 				end

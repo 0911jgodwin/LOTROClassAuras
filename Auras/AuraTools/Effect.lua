@@ -5,7 +5,6 @@ function Effect:Constructor(parent, size, icon, stack)
 	self:SetParent(parent);
 	self:SetSize(size, size + 4);
     self:SetVisible(true);
-    size=38
     self.duration = -1;
     self.currentTime = -1;
     self.stack = stack;
