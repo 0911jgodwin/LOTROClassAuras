@@ -94,12 +94,12 @@ end
 function OptionsBuffs:AddEffect(effectName, effectIcon)
 	local effectData = {effectName, effectIcon};
 
-	local effectNode = EffectNode(effectData[1]);
+	local BuffNode = BuffNode(effectData[1]);
 
-	local effectNodeData = EffectNodeData(effectData, self.treeView);
+	local BuffNodeData = BuffNodeData(effectData, self.treeView);
 
-	self.treeView:GetNodes():Add(effectNode);
-	effectNode:GetChildNodes():Add(effectNodeData);
+	self.treeView:GetNodes():Add(BuffNode);
+	BuffNode:GetChildNodes():Add(BuffNodeData);
 end
 
 function OptionsBuffs:SizeChanged(args)
@@ -142,8 +142,8 @@ function OptionsBuffs:Unload()
 	self.buffSettings:ClearItems();
 end
 
-EffectNode = class(Turbine.UI.TreeNode);
-function EffectNode:Constructor(name)
+BuffNode = class(Turbine.UI.TreeNode);
+function BuffNode:Constructor(name)
 	Turbine.UI.TreeNode.Constructor(self);
 
 	self.expanded = false;
@@ -183,19 +183,19 @@ function EffectNode:Constructor(name)
 	self.plus:SetMouseVisible(false);
 end
 
-function EffectNode:SetName(name)
+function BuffNode:SetName(name)
 	self.effectName:SetText(name);
 end
 
-function EffectNode:MouseEnter(args)
+function BuffNode:MouseEnter(args)
 	self.border:SetBackColor(Turbine.UI.Color(212/255,175/255,55/255));
 end
 
-function EffectNode:MouseLeave(args)
+function BuffNode:MouseLeave(args)
 	self.border:SetBackColor(Turbine.UI.Color(0.75, 0.1, 0.25, 0.52));
 end
 
-function EffectNode:MouseClick(args)
+function BuffNode:MouseClick(args)
 	if self.expanded then
 		self.expanded = false;
 		self.plus:SetBackground(0x41007E27);
@@ -205,8 +205,8 @@ function EffectNode:MouseClick(args)
 	end
 end
 
-EffectNodeData = class(Turbine.UI.TreeNode);
-function EffectNodeData:Constructor(data, parent)
+BuffNodeData = class(Turbine.UI.TreeNode);
+function BuffNodeData:Constructor(data, parent)
 	Turbine.UI.TreeNode.Constructor(self);
 
 	self.rootNode = parent;
@@ -232,7 +232,7 @@ function EffectNodeData:Constructor(data, parent)
 
 	self.container:AddItem(self.padding);
 
-	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
+	--[<Effect Name>] = {<image ID>}
 	self.effectNameContainer = Turbine.UI.Control();
 	self.effectNameContainer:SetSize(278, 25);
 
@@ -315,7 +315,7 @@ function EffectNodeData:Constructor(data, parent)
 
 end
 
-function EffectNodeData:GetData()
+function BuffNodeData:GetData()
 
 	local name = self.effectNameValue:GetText();
 	local icon = nil;

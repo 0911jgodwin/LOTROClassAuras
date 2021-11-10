@@ -76,7 +76,7 @@ elseif playerClass == Turbine.Gameplay.Class.Brawler then
 
 elseif playerClass == Turbine.Gameplay.Class.Burglar then
 
-	Turbine.Shell.WriteLine("Burglar")
+	Turbine.Shell.WriteLine("Burglar is not currently supported by Auras.")
 
 elseif playerClass == Turbine.Gameplay.Class.Captain then
 
@@ -100,11 +100,11 @@ elseif playerClass == Turbine.Gameplay.Class.Hunter then
 
 elseif playerClass == Turbine.Gameplay.Class.LoreMaster then
 
-	Turbine.Shell.WriteLine("Lore-Master")
+	Turbine.Shell.WriteLine("Lore-Master is not currently supported by Auras.")
 
 elseif playerClass == Turbine.Gameplay.Class.Minstrel then
 
-	Turbine.Shell.WriteLine("Minstrel")
+	Turbine.Shell.WriteLine("Minstrel is not currently supported by Auras.")
 
 elseif playerClass == Turbine.Gameplay.Class.RuneKeeper then
 
@@ -113,7 +113,7 @@ elseif playerClass == Turbine.Gameplay.Class.RuneKeeper then
 
 elseif playerClass == Turbine.Gameplay.Class.Warden then
 
-	Turbine.Shell.WriteLine("Warden")
+	Turbine.Shell.WriteLine("Warden is not currently supported by Auras.")
 
 end
 

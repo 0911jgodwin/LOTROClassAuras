@@ -14,8 +14,11 @@ function UpdateToLatestVersion(version)
 		};
 		Settings["Class"][1]["Buffs"] ={};
 		Settings["Class"][2]["Buffs"] ={};
-		Settings["Class"][3]["Buffs"] ={};
-		version = "V.7.0";
+		if playerClass ~= Turbine.Gameplay.Class.Brawler then
+			Settings["Class"][3]["Buffs"] ={};
+		end
+		--Update the version so future if statements can catch it and update it sequentially.
+		version = "V.7.0.1";
 	end
 
 	Settings["General"]["Version"] = "V." .. plugin:GetVersion();
