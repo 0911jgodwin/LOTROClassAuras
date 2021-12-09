@@ -1,13 +1,14 @@
 _G.ResourceBar = class( Turbine.UI.Control );
-function ResourceBar:Constructor(parent, width, height, pipCount, colours)
+function ResourceBar:Constructor(parent, width, height, pipCount, colours, textScale)
     Turbine.UI.Control.Constructor( self );
     self:SetParent(parent);
-    self:SetSize(width, 24);
+    self:SetSize(width, (53*textScale));
     self:SetZOrder(100);
     self:SetMouseVisible(false);
     self:SetVisible(true);
 
     self.colours = colours;
+    self.textScale = textScale;
 
     --Example settings. Requires a value stored at 0 to be the default colour, other values are break points that tell it to switch to a new colour
     --In this example 0-2 pips are blue, 3-8 pips are yellow, and 9 pips display as red.
@@ -22,8 +23,8 @@ function ResourceBar:Constructor(parent, width, height, pipCount, colours)
     self.Pips = {};
     local pipWidth = width/pipCount;
     for i = 1, pipCount, 1 do
-        self.Pips[i] = Pip(self, pipWidth, 6)
-        self.Pips[i]:SetPosition((width/2) - ((pipWidth/2) * pipCount) + ((i-1)*pipWidth), 12);
+        self.Pips[i] = Pip(self, pipWidth, height)
+        self.Pips[i]:SetPosition((width/2) - ((pipWidth/2) * pipCount) + ((i-1)*pipWidth), (53*self.textScale)/2- height/2);
         self.numbers[i] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/GU" .. i .. ".tga");
     end
     self.numbers[0] = Turbine.UI.Graphic("ExoPlugins/Auras/Resources/GU" .. 0 .. ".tga");
@@ -33,8 +34,8 @@ function ResourceBar:Constructor(parent, width, height, pipCount, colours)
     
     self.image:SetBackground(self.numbers[0]);
     self.image:SetStretchMode(1);
-    self.image:SetSize(18, 18)
-    self.image:SetPosition(width/2-10, 6);
+    self.image:SetSize((51*textScale), (53*textScale))
+    self.image:SetPosition(width/2-10, 0);
     self.image:SetStretchMode(2);
     self.image:SetMouseVisible(false);
 
@@ -65,7 +66,7 @@ function ResourceBar:SetImage(total)
     self.image:SetSize(51, 53);
     self.image:SetBackground(self.numbers[total]);
     self.image:SetStretchMode(1);
-    self.image:SetSize(18, 18)
+    self.image:SetSize((51*self.textScale), (53*self.textScale))
 end
 
 function ResourceBar:SetAttunementTotal(total)
@@ -140,10 +141,10 @@ function Pip:Unload()
 end
 
 _G.VitalBar = class( Turbine.UI.Control );
-function VitalBar:Constructor(parent, width, height, textScale)
+function VitalBar:Constructor(parent, width, height, textScale, colours)
     Turbine.UI.Control.Constructor( self );
     self:SetParent(parent);
-    self:SetSize(width, 24);
+    self:SetSize(width, (53*textScale));
     self:SetZOrder(100);
     self:SetMouseVisible(false);
     self:SetVisible(true);
@@ -161,6 +162,12 @@ function VitalBar:Constructor(parent, width, height, textScale)
     [0] = Turbine.UI.Color(0.23, 0.12, 0.77),
     [3] = Turbine.UI.Color( 1.00, 0.96, 0.41 ),
     [9] = Turbine.UI.Color(0.77, 0.12, 0.23),
+    };]]--
+
+    --[[self.colors = {
+        [1] = {40, Turbine.UI.Color(1, 0.12, 0.12)},
+        [2] = {100, Turbine.UI.Color(1, 0.4, 0)},
+
     };]]--
 
     --Oh boy, it's Kerning time
@@ -183,7 +190,7 @@ function VitalBar:Constructor(parent, width, height, textScale)
     self.twoDigitLeftPos = width/2 - (51*self.textScale);
     self.twoDigitRightPos = width/2;
 
-    self.bar = VitalDisplay(self, width, 6, Turbine.UI.Color(1, 0.4, 0));
+    self.bar = VitalDisplay(self, width, height, colours);
     self.bar:SetTop(((53*self.textScale)/2)-(self.bar:GetHeight()/2));
 
     self.firstDigit = Turbine.UI.Control();
@@ -268,9 +275,10 @@ function VitalBar:Unload()
 end
 
 VitalDisplay = class( Turbine.UI.Control );
-function VitalDisplay:Constructor(parent, width, height, color)
+function VitalDisplay:Constructor(parent, width, height, colors)
     Turbine.UI.Control.Constructor( self );
-    self.color = color;
+
+    self.colours = colors;
     self:SetParent(parent);
     self:SetSize(width, height);
     self:SetZOrder(100);
@@ -296,10 +304,27 @@ end
 function VitalDisplay:SetValue(number)
     local currentWidth = number/100 * self.BackgroundBar:GetWidth();
 
+    local colourSet = false;
+    local i = 1;
+    while(colourSet == false)
+    do
+        if self.colours[i] ~= nil then
+            if number <= self.colours[i][1] then
+                self.CurrentBar:SetBackColor(self.colours[i][2]);
+                colourSet = true;
+            end
+        else
+            --If we get here just throw it a default colour to use
+            self.CurrentBar:SetBackColor(Turbine.UI.Color(0, 0.82, 1));
+            colourSet = true;
+        end
+        i = i + 1;
+    end
+
     self.CurrentBar:SetWidth(math.ceil(currentWidth));
-    if number <= 40 then
+    --[[if number <= 40 then
         self.CurrentBar:SetBackColor(Turbine.UI.Color(1, 0.12, 0.12));
     else
-        self.CurrentBar:SetBackColor(self.color);
-    end
+        self.CurrentBar:SetBackColor(Turbine.UI.Color(1, 0.4, 0));
+    end]]--
 end

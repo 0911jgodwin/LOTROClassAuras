@@ -4,7 +4,14 @@ function Skill:Constructor(parent, size, icon, responsive, display)
 
     self:SetParent(parent);
     self:SetSize(32);
-    self:SetVisible(true);    
+    self:SetVisible(true);
+    
+
+    IconSize = Turbine.UI.Control();
+    IconSize:SetBackground(icon);
+    IconSize:SetStretchMode(2);
+    local baseSize = IconSize:GetHeight();
+    IconSize = nil;
 
     self.background = icon;
     self.grayscaleBackground = icon;
@@ -17,22 +24,22 @@ function Skill:Constructor(parent, size, icon, responsive, display)
 	self.BlackBorder = Turbine.UI.Control();
     self.BlackBorder:SetParent( self );
     self.BlackBorder:SetBackColor( Turbine.UI.Color( 1, 0, 0, 0 ) );
-    self.BlackBorder:SetPosition( 1, 3 );
-    self.BlackBorder:SetSize( 32 - math.ceil(32/16), 32 - math.ceil((32/16)*3) );
+    self.BlackBorder:SetPosition( 1, 3);
+    self.BlackBorder:SetSize( baseSize - math.floor(baseSize/16), baseSize - math.floor((baseSize/16)*3) );
     self.BlackBorder:SetMouseVisible( false );
 
     self.IconFrame = Turbine.UI.Control();
     self.IconFrame:SetParent( self.BlackBorder );
     self.IconFrame:SetBackColor( Turbine.UI.Color( 1, 0, 0, 0 ) );
-    self.IconFrame:SetPosition( 1, 1 );
-    self.IconFrame:SetSize( (32 - math.ceil(32/16)) - 2, (32 - math.ceil((32/16)*3) - 2) );
+    self.IconFrame:SetPosition( (1/32)*baseSize, (1/32)*baseSize );
+    self.IconFrame:SetSize( (baseSize - math.floor(baseSize/16)) - (2/32)*baseSize, (baseSize - math.floor((baseSize/16)*3) - (2/32)*baseSize) );
     self.IconFrame:SetMouseVisible( false );
 
     self.IconLabel = Turbine.UI.Label();
     self.IconLabel:SetParent(self.IconFrame);
     self.IconLabel:SetBackground(self.background);
-    self.IconLabel:SetSize(32, 32);
-    self.IconLabel:SetPosition( -math.floor(32/16), -math.floor((32/16)*3) );
+    self.IconLabel:SetSize(baseSize, baseSize);
+    self.IconLabel:SetPosition( -(2/32)*baseSize, -(5/32)*baseSize );
     self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
     self.IconLabel:SetBlendMode(7);
     self.IconLabel:SetBackColorBlendMode(1);
@@ -49,7 +56,7 @@ function Skill:Constructor(parent, size, icon, responsive, display)
     self.Tint:SetBackColorBlendMode( Turbine.UI.BlendMode.Overlay );
     self.Tint:SetBlendMode( Turbine.UI.BlendMode.Overlay );
     self.Tint:SetPosition( -2, -4 );
-    self.Tint:SetSize( 32, 32 );
+    self.Tint:SetSize( baseSize, baseSize );
     self.Tint:SetMouseVisible( false );
     self.Tint:SetVisible(not self.active);
 
@@ -65,7 +72,7 @@ function Skill:Constructor(parent, size, icon, responsive, display)
     self.duration = -1;
     self.maxDuration = -1;
 
-    self.CooldownText = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), 0.3);
+    self.CooldownText = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), Settings["General"]["TimerFontSize"]);
     self.CooldownText:SetPosition(1, 3);
     self.CooldownText:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleCenter);
     self.CooldownText:SetMouseVisible(false);

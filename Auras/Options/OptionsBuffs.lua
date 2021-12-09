@@ -2,7 +2,7 @@ OptionsBuffs = class(Turbine.UI.Control);
 function OptionsBuffs:Constructor()
 	Turbine.UI.Control.Constructor(self);
 	self.width = 200;
-	self.height = 450;
+	self.height = 480;
 
 	self.fontColor = Turbine.UI.Color(225/255,197/255,110/255);
 	
@@ -12,7 +12,7 @@ function OptionsBuffs:Constructor()
 
 	self.buffSettings = Turbine.UI.ListBox();
 	self.buffSettings:SetParent(self);
-	self.buffSettings:SetSize(310, 410);
+	self.buffSettings:SetSize(310, 450);
 	self.buffSettings:SetTop(30);
 	self.buffSettings:SetMouseVisible(false);
 	self.buffSettings:SetVisible(true);
@@ -29,6 +29,29 @@ function OptionsBuffs:Constructor()
 	self.description:SetForeColor(self.fontColor);
 
 	self.buffSettings:AddItem(self.description);
+
+	self.aurasIconSizeControl = Turbine.UI.Control();
+	self.aurasIconSizeControl:SetSize(310, 25);
+
+	self.aurasIconSizeLabel = Turbine.UI.Label();
+	self.aurasIconSizeLabel:SetParent(self.aurasIconSizeControl);
+	self.aurasIconSizeLabel:SetSize(200, 25);
+	self.aurasIconSizeLabel:SetText("Buffs Icon Size: ");
+	self.aurasIconSizeLabel:SetLeft(50);
+	self.aurasIconSizeLabel:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+	self.aurasIconSizeLabel:SetFont(Turbine.UI.Lotro.Font.TrajanPro15);
+	self.aurasIconSizeLabel:SetForeColor(self.fontColor);
+
+	self.aurasIconSizeValue = Turbine.UI.Lotro.TextBox();
+	self.aurasIconSizeValue:SetParent(self.aurasIconSizeControl);
+	self.aurasIconSizeValue:SetSize(50, 18);
+	self.aurasIconSizeValue:SetFont(Turbine.UI.Lotro.Font.TrajanPro15);
+	self.aurasIconSizeValue:SetForeColor(self.fontColor);
+	self.aurasIconSizeValue:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleCenter);
+	self.aurasIconSizeValue:SetLeft(200);
+	self.aurasIconSizeValue:SetTop(3);
+
+	self.buffSettings:AddItem(self.aurasIconSizeControl);
 
 
 	self.treeContainer = Turbine.UI.Control();
@@ -119,6 +142,7 @@ function OptionsBuffs:SaveData()
 		data[currentData[1]] = currentData[2];
 	end
 	Settings["Class"][playerRole]["Buffs"] = data;
+	Settings["General"]["BuffIconSize"] = self.aurasIconSizeValue:GetText();
 end
 
 function OptionsBuffs:LoadData()
@@ -130,6 +154,8 @@ function OptionsBuffs:LoadData()
 	for key, value in pairs(data) do
 		self:AddEffect(value, Settings["Class"][playerRole]["Buffs"][value]);
 	end
+
+	self.aurasIconSizeValue:SetText(Settings["General"]["BuffIconSize"]);
 end
 
 function OptionsBuffs:Reload()

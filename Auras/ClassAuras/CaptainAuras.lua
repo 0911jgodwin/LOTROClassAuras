@@ -45,24 +45,24 @@ function CaptainAuras:ConfigureBars()
 	self.ProcBar= _G.EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = _G.SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 63);
+	self.SkillBar:SetPosition(0, Settings["General"]["YPositions"]["SkillBar"]);
 
-	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, 32);
+	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, Settings["General"]["BuffIconSize"]);
 	self.BuffsBar:SetPosition(Settings["General"]["Buffs"]["Position"][1]*screenWidth, Settings["General"]["Buffs"]["Position"][2]*screenHeight);
 	self.BuffDragBar = DragBar( self.BuffsBar, "Buffs" );
 
-	self.RallyBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.PenetratingBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.StanceBar = _G.BuffBar(self, math.floor(width/3), 10, Turbine.UI.Color( 0.23, 0.77, 0.12 ), Turbine.UI.ContentAlignment.MiddleCenter);
-	self.ReadiedBar = _G.BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
-	self.HardenedBar = _G.BuffBar(self, math.floor(width/2), 10, Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
+	self.RallyBar = _G.BuffBar(self, math.floor(width/3), Settings["General"]["Resource"]["Height"], Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.PenetratingBar = _G.BuffBar(self, math.floor(width/3), Settings["General"]["Resource"]["Height"], Turbine.UI.Color( 1.00, 0.96, 0.41 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.StanceBar = _G.BuffBar(self, math.floor(width/3), Settings["General"]["Resource"]["Height"], Turbine.UI.Color( 0.23, 0.77, 0.12 ), Turbine.UI.ContentAlignment.MiddleCenter);
+	self.ReadiedBar = _G.BuffBar(self, math.floor(width/2), Settings["General"]["Resource"]["Height"], Turbine.UI.Color(0.23, 0.12, 0.77), Turbine.UI.ContentAlignment.MiddleRight);
+	self.HardenedBar = _G.BuffBar(self, math.floor(width/2), Settings["General"]["Resource"]["Height"], Turbine.UI.Color(0.77, 0.12, 0.23), Turbine.UI.ContentAlignment.MiddleLeft);
 
 
-	self.RallyBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 , 42);
-	self.StanceBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth()), 42);
-	self.PenetratingBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth() * 2), 42);
-	self.ReadiedBar:SetPosition(width/2 - self.ReadiedBar:GetWidth(), 54);
-	self.HardenedBar:SetPosition(width/2, 54);
+	self.RallyBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 , Settings["General"]["YPositions"]["Resource"]);
+	self.StanceBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth()), Settings["General"]["YPositions"]["Resource"]);
+	self.PenetratingBar:SetPosition(width/2 - math.floor(self.RallyBar:GetWidth()/2) * 3 + math.floor(self.RallyBar:GetWidth() * 2), Settings["General"]["YPositions"]["Resource"]);
+	self.ReadiedBar:SetPosition(width/2 - self.ReadiedBar:GetWidth(), Settings["General"]["YPositions"]["Resource"] + Settings["General"]["Resource"]["Height"] + 2);
+	self.HardenedBar:SetPosition(width/2, Settings["General"]["YPositions"]["Resource"] + Settings["General"]["Resource"]["Height"] + 2);
 
 	self.BarTable = {
 		["Battle-hardened"] = self.HardenedBar,
@@ -78,7 +78,7 @@ function CaptainAuras:ConfigureBars()
 	end
 
 	for key, value in pairs(self.BuffEffects) do
-		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, 32, value, 0));
+		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, Settings["General"]["BuffIconSize"], value, 0));
 	end
 
 	if Settings["General"]["ShowSkills"] then

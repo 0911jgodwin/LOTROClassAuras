@@ -9,28 +9,36 @@ function Effect:Constructor(parent, size, icon, stack)
     self.currentTime = -1;
     self.stack = stack;
 
+    IconSize = Turbine.UI.Control();
+    IconSize:SetBackground(icon);
+    IconSize:SetStretchMode(2);
+    local baseSize = IconSize:GetHeight();
+    IconSize = nil;
 
 	self.BlackBorder = Turbine.UI.Control();
     self.BlackBorder:SetParent( self );
     self.BlackBorder:SetBackColor( Turbine.UI.Color( 1, 0, 0, 0 ) );
     self.BlackBorder:SetPosition( 1, 3 );
-    self.BlackBorder:SetSize( 32 - math.ceil(32/16), 32 - math.ceil((32/16)*3) );
+    self.BlackBorder:SetSize( baseSize - math.floor(baseSize/16), baseSize - math.floor((baseSize/16)*3) );
     self.BlackBorder:SetMouseVisible( false );
 
     self.IconFrame = Turbine.UI.Control();
     self.IconFrame:SetParent( self.BlackBorder );
     self.IconFrame:SetBackColor( Turbine.UI.Color( 1, 0, 0, 0 ) );
-    self.IconFrame:SetPosition( 1, 1 );
-    self.IconFrame:SetSize( (32 - math.ceil(32/16)) - 2, (32 - math.ceil((32/16)*3) - 2) );
+    self.IconFrame:SetPosition( (1/32)*baseSize, (1/32)*baseSize );
+    self.IconFrame:SetSize( (baseSize - math.floor(baseSize/16)) - (2/32)*baseSize, (baseSize - math.floor((baseSize/16)*3) - (2/32)*baseSize) );
     self.IconFrame:SetMouseVisible( false );
 
     self.IconLabel = Turbine.UI.Label();
     self.IconLabel:SetParent(self.IconFrame);
     self.IconLabel:SetBackground(icon);
-    self.IconLabel:SetSize(32, 32);
-    self.IconLabel:SetPosition( -2, -4 );
+    self.IconLabel:SetSize(baseSize, baseSize);
+    self.IconLabel:SetPosition( -(2/32)*baseSize, -(5/32)*baseSize );
+    self.IconLabel:SetBackColor(Turbine.UI.Color(0,1,1,1));
+    self.IconLabel:SetBlendMode(7);
+    self.IconLabel:SetBackColorBlendMode(1);
 
-    self.DurationLabel = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), 0.33);
+    self.DurationLabel = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), Settings["General"]["TimerFontSize"]);
     self.DurationLabel:SetPosition(1, 3);
     self.DurationLabel:SetTextAlignment(Turbine.UI.ContentAlignment.BottomCenter);
     self.DurationLabel:SetMouseVisible(false);
@@ -41,7 +49,7 @@ function Effect:Constructor(parent, size, icon, stack)
     self.BlackBorder:SetSize(size - math.ceil(size/16), size - math.ceil((size/16)*3) );
 
     if stack > 0 then
-        self.StackLabel = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), 0.33);
+        self.StackLabel = NumericalDisplay(self, size - math.ceil(size/16), size - math.ceil((size/16)*3), Settings["General"]["TimerFontSize"]);
         self.StackLabel:SetPosition(1, 3);
         self.StackLabel:SetTextAlignment(Turbine.UI.ContentAlignment.TopCenter);
         self.StackLabel:SetMouseVisible(false);

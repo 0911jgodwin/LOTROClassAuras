@@ -115,6 +115,10 @@ elseif playerClass == Turbine.Gameplay.Class.Warden then
 
 	Turbine.Shell.WriteLine("Warden is not currently supported by Auras.")
 
+elseif playerClass == Turbine.Gameplay.Class.Stalker then
+	import "ExoPlugins.Auras.ClassAuras.StalkerAuras";
+	Tools = _G.StalkerAuras(self);
+
 end
 
 plugin.Load=function(sender, args)

@@ -122,9 +122,9 @@ function BeorningAuras:ConfigureBars()
 	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 54);
+	self.SkillBar:SetPosition(0, Settings["General"]["YPositions"]["SkillBar"]);
 
-	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, 32);
+	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, Settings["General"]["BuffIconSize"]);
 	self.BuffsBar:SetPosition(Settings["General"]["Buffs"]["Position"][1]*screenWidth, Settings["General"]["Buffs"]["Position"][2]*screenHeight);
 	self.BuffDragBar = DragBar( self.BuffsBar, "Buffs" );
 
@@ -136,8 +136,13 @@ function BeorningAuras:ConfigureBars()
 		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, 32, value, 0));
 	end
 
-	self.Wrath = VitalBar(self, width, 24, 0.35);
-	self.Wrath:SetPosition(0, 42);
+	self.colors = {
+        [1] = {40, Turbine.UI.Color(1, 0.12, 0.12)},
+        [2] = {100, Turbine.UI.Color(1, 0.4, 0)},
+    };
+
+	self.Wrath = VitalBar(self, width, Settings["General"]["Resource"]["Height"], Settings["General"]["Resource"]["FontSize"], self.colors);
+	self.Wrath:SetPosition(0, Settings["General"]["YPositions"]["Resource"]);
 	self.Wrath:SetTotal(playerAttributes:GetWrath());
 
 	if Settings["General"]["ShowSkills"] then

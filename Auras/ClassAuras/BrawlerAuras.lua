@@ -75,9 +75,9 @@ function BrawlerAuras:ConfigureBars()
 	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 51);
+	self.SkillBar:SetPosition(0, Settings["General"]["YPositions"]["SkillBar"]);
 
-	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, 32);
+	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, Settings["General"]["BuffIconSize"]);
 	self.BuffsBar:SetPosition(Settings["General"]["Buffs"]["Position"][1]*screenWidth, Settings["General"]["Buffs"]["Position"][2]*screenHeight);
 	self.BuffDragBar = DragBar( self.BuffsBar, "Buffs" );
 
@@ -86,7 +86,7 @@ function BrawlerAuras:ConfigureBars()
 	end
 
 	for key, value in pairs(self.BuffEffects) do
-		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, 32, value, 0));
+		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, Settings["General"]["BuffIconSize"], value, 0));
 	end
 
 	self.colours = {
@@ -94,8 +94,8 @@ function BrawlerAuras:ConfigureBars()
 		[4] = Turbine.UI.Color(0.87, 0.55, 0.1),
 		[7] = Turbine.UI.Color(0.77, 0.12, 0.23),
     };
-	self.mettle = ResourceBar(self, width, 24, 9, self.colours);
-	self.mettle:SetPosition(0, 35);
+	self.mettle = ResourceBar(self, width, Settings["General"]["Resource"]["Height"], 9, self.colours, Settings["General"]["Resource"]["FontSize"]);
+	self.mettle:SetPosition(0, Settings["General"]["YPositions"]["Resource"]);
 	self.mettle:SetTotal(0);
 
 	self.lastTier = "Battle Flow 1";

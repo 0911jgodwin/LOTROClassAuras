@@ -2,7 +2,7 @@ _G.OptionsSkills = class(Turbine.UI.Control);
 function OptionsSkills:Constructor()
 	Turbine.UI.Control.Constructor(self);
 	self.width = 200;
-	self.height = 450;
+	self.height = 700;
 
 	self.fontColor = Turbine.UI.Color(225/255,197/255,110/255);
 	
@@ -12,7 +12,7 @@ function OptionsSkills:Constructor()
 
 	self.procSettings = Turbine.UI.ListBox();
 	self.procSettings:SetParent(self);
-	self.procSettings:SetSize(310, 410);
+	self.procSettings:SetSize(310, 650);
 	self.procSettings:SetTop(30);
 	self.procSettings:SetMouseVisible(false);
 	self.procSettings:SetVisible(true);
@@ -30,11 +30,36 @@ function OptionsSkills:Constructor()
 
 	self.procSettings:AddItem(self.description);
 
+	self.rowsContainer = Turbine.UI.Control();
+	self.rowsContainer:SetParent(self);
+	self.rowsContainer:SetSize(310, 100);
+	self.rowsContainer:SetVisible(true);
+	self.procSettings:AddItem(self.rowsContainer);
+
+	self.rowSettings = Turbine.UI.ListBox();
+	self.rowSettings:SetParent(self.rowsContainer);
+	self.rowSettings:SetSize(300, 100);
+	self.rowSettings:SetMouseVisible(false);
+	self.rowSettings:SetVisible(true);
+
+	self.rowScrollBar = Turbine.UI.Lotro.ScrollBar();
+	self.rowScrollBar:SetOrientation( Turbine.UI.Orientation.Vertical );
+	self.rowScrollBar:SetParent( self.rowsContainer );
+	self.rowScrollBar:SetPosition( 300, 0 );
+	self.rowScrollBar:SetSize( 10, 100 );
+
+	self.rowSettings:SetVerticalScrollBar( self.rowScrollBar );
+
+	self.spacer = Turbine.UI.Control();
+	self.spacer:SetParent(self);
+	self.spacer:SetSize(310, 20);
+	self.spacer:SetVisible(true);
+	self.procSettings:AddItem(self.spacer);
+
 
 	self.treeContainer = Turbine.UI.Control();
 	self.treeContainer:SetParent(self);
 	self.treeContainer:SetSize(310, 300);
-	--self.treeContainer:SetTop(130);
 	self.treeContainer:SetVisible(true);
 	self.procSettings:AddItem(self.treeContainer);
 
@@ -119,6 +144,14 @@ function OptionsSkills:SaveData()
 		data[currentData[1]] = {currentData[2], currentData[3], currentData[4], currentData[5], currentData[6]};
 	end
 	Settings["Class"][playerRole]["Skills"]["SkillData"] = data;
+
+	local data = {};
+	for key, value in spairs(self.rowData) do
+		local info = value:GetData();
+		data[info[1]] = info[2];
+	end
+
+	Settings["Class"][playerRole]["Skills"]["RowInfo"] = data;
 end
 
 function OptionsSkills:LoadData()
@@ -130,7 +163,7 @@ function OptionsSkills:LoadData()
 	table.sort(data, function(a,b)
 		return SortSkills(Settings["Class"][playerRole]["Skills"]["SkillData"][a], Settings["Class"][playerRole]["Skills"]["SkillData"][b])
 	end);
-	local Data = {};
+	
 	for key, value in pairs(data) do
 		self:AddSkill(value, 
 			Settings["Class"][playerRole]["Skills"]["SkillData"][value][1], 
@@ -139,16 +172,75 @@ function OptionsSkills:LoadData()
 			Settings["Class"][playerRole]["Skills"]["SkillData"][value][4], 
 			Settings["Class"][playerRole]["Skills"]["SkillData"][value][5]);
 	end
+
+	local data = {};
+
+	for key, value in spairs(Settings["Class"][playerRole]["Skills"]["RowInfo"]) do
+		local rowNode = RowNode(key, value);
+		self.rowSettings:AddItem(rowNode);
+		table.insert(data, rowNode);
+	end
+
+	self.rowData = data;
 end
 
 function OptionsSkills:Reload()
 	self.treeView:GetNodes():Clear();
+	self.rowSettings:ClearItems();
 	self:LoadData();
 end
 
 function OptionsSkills:Unload()
 	self.treeView:GetNodes():Clear();
+	self.rowSettings:ClearItems();
 	self.procSettings:ClearItems();
+end
+
+RowNode = class(Turbine.UI.Control);
+function RowNode:Constructor(number, iconSize)
+	Turbine.UI.Control.Constructor(self);
+	self:SetSize(300, 27);
+
+	self.number = number;
+
+	self.border = Turbine.UI.Control();
+	self.border:SetParent(self);
+	self.border:SetSize(300, 25);
+	self.border:SetBackColor(Turbine.UI.Color(0.75, 0.1, 0.25, 0.52));
+	self.border:SetMouseVisible(false);
+
+	self.container = Turbine.UI.Control();
+	self.container:SetParent(self);
+	self.container:SetSize(298, 23);
+	self.container:SetPosition(1,1);
+	self.container:SetBackColor(Turbine.UI.Color(0.925,0,0,0));
+	self.container:SetMouseVisible(false);
+
+	self.rowName = Turbine.UI.Label();
+	self.rowName:SetParent(self.container);
+	self.rowName:SetSize(200, 23);
+	self.rowName:SetText("Row " .. number);
+	self.rowName:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+	self.rowName:SetFont(Turbine.UI.Lotro.Font.TrajanPro15);
+	self.rowName:SetForeColor(Turbine.UI.Color(225/255,197/255,110/255));
+	self.rowName:SetPosition(50, 0);
+	self.rowName:SetMouseVisible(false);
+
+
+	self.rowIconSize = Turbine.UI.Lotro.TextBox();
+	self.rowIconSize:SetParent(self.container);
+	self.rowIconSize:SetSize(45, 19);
+	self.rowIconSize:SetFont(Turbine.UI.Lotro.Font.TrajanPro15);
+	self.rowIconSize:SetForeColor(Turbine.UI.Color(225/255,197/255,110/255));
+	self.rowIconSize:SetText(iconSize);
+	self.rowIconSize:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleCenter);
+	self.rowIconSize:SetLeft(205);
+	self.rowIconSize:SetTop(2);
+end
+
+function RowNode:GetData()
+	local data = {self.number, self.rowIconSize:GetText()};
+	return data;
 end
 
 SkillNode = class(Turbine.UI.TreeNode);

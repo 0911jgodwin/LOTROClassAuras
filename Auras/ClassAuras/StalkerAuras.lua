@@ -1,6 +1,6 @@
 import "ExoPlugins.Auras.AuraTools";
-_G.RunekeeperAuras = class(Turbine.UI.Window)
-function RunekeeperAuras:Constructor(parent)
+_G.StalkerAuras = class(Turbine.UI.Window)
+function StalkerAuras:Constructor(parent)
     Turbine.UI.Window.Constructor(self)
 
 	self:SetParent(parent);
@@ -15,26 +15,48 @@ function RunekeeperAuras:Constructor(parent)
 	--Data required for additional entries to this table:
 	--[<Effect Name>] = <Skill to Highlight>
 	self.SkillHighlights = {
-		["Master of Connotation - 5"] = "Writ of Fire",
-		["Charged"] = "Sustaining Bolt",
 	};
 
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};
 
+	self.CriticalResponseSkills = {
+		["Rend Flesh"] = true,
+		["Frenzy"] = true,
+	};
+
+	self.DefeatResponseSkills = {
+		["Rallying Howl"] = true,
+	};
+
+	self.criticalResponse = false;
+	self.defeatResponse = false;
+
 	self:ConfigureBars();
 	self:ConfigureCallbacks();
 
-	self.DragBar = DragBar( self, "Runekeeper Auras" );
+	self.DragBar = DragBar( self, "Stalker Auras" );
 end
 
-function RunekeeperAuras:AttunementManagement(attunementTotal)
-	self.attunement:SetAttunementTotal(attunementTotal);
+function StalkerAuras:PowerManagement(PowerTotal)
+	local powerPercentage = math.floor((PowerTotal / player:GetMaxPower()) * 100);
+	self.Power:SetTotal(powerPercentage);
 end
 
-function RunekeeperAuras:ConfigureBars()
+function StalkerAuras:ResponseSkillManagement()
+	for key, value in pairs(self.CriticalResponseSkills) do
+		self.SkillBar:ToggleActive(key, self.criticalResponse);
+	end
+end
 
+function StalkerAuras:ManageSkills()
+	for key, value in pairs(self.CriticalResponseSkills) do
+		self.SkillBar:ToggleActive(key, self.criticalResponse);
+	end
+end
+
+function StalkerAuras:ConfigureBars()
 	local screenWidth, screenHeight = Turbine.UI.Display:GetSize();
 	self:SetPosition(Settings["General"]["Position"][1]*screenWidth, Settings["General"]["Position"][2]*screenHeight);
 	
@@ -68,13 +90,15 @@ function RunekeeperAuras:ConfigureBars()
 		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, Settings["General"]["BuffIconSize"], value, 0));
 	end
 
-	self.colours = {
-		[0] = Turbine.UI.Color(0.77, 0.12, 0.23),
-		[11] = Turbine.UI.Color(0.12, 0.77, 0.23),
-	};
-	self.attunement = ResourceBar(self, width, Settings["General"]["Resource"]["Height"], 9, self.colours, Settings["General"]["Resource"]["FontSize"]);
-	self.attunement:SetPosition(0, Settings["General"]["YPositions"]["Resource"]);
-	self.attunement:SetAttunementTotal(playerAttributes:GetAttunement());
+	self.colors = {
+        [1] = {20, Turbine.UI.Color(1, 0.12, 0.12)},
+        [2] = {35, Turbine.UI.Color(1, 0.96, 0.41)},
+        [3] = {100, Turbine.UI.Color(0, 0.82, 1)},
+    };
+
+	self.Power = VitalBar(self, width, Settings["General"]["Resource"]["Height"], Settings["General"]["Resource"]["FontSize"], self.colors);
+	self.Power:SetPosition(0, Settings["General"]["YPositions"]["Resource"]);
+	self.Power:SetTotal(math.floor((player:GetPower()/player:GetMaxPower())*100));
 
 	if Settings["General"]["ShowSkills"] then
 		for i = 1, skillList:GetCount(), 1 do
@@ -85,13 +109,16 @@ function RunekeeperAuras:ConfigureBars()
 			end
 
 			if self.Skills[name] then
-				self.SkillBar:AddSkill(name, Skill(self.SkillBar, self.RowInfo[self.Skills[name][3]], self.Skills[name][1], self.Skills[name][4] , self.Skills[name][5]), self.Skills[name][2], self.Skills[name][3] );
+				self.SkillBar:AddSkill(name, Skill(self.SkillBar, self.RowInfo[self.Skills[name][3]], self.Skills[name][1], self.Skills[name][4] , self.Skills[name][5]), self.Skills[name][2], self.Skills[name][3] );				
 			end
 		end
 	end
+	if self.Skills["Brand"] ~= nil then
+		self.SkillBar:AddSkill("Brand", Skill(self.SkillBar, self.RowInfo[self.Skills["Brand"][3]], self.Skills["Brand"][1], self.Skills["Brand"][4] , self.Skills["Brand"][5]), self.Skills["Brand"][2], self.Skills["Brand"][3] );	
+	end
 end
 
-function RunekeeperAuras:ConfigureCallbacks() 
+function StalkerAuras:ConfigureCallbacks() 
 	self.effectAddedCallback = AddCallback(playerEffects, "EffectAdded", function(sender, args)
 		local effect = playerEffects:Get(args.Index);
 		local effectName = effect:GetName();
@@ -100,6 +127,26 @@ function RunekeeperAuras:ConfigureCallbacks()
 
 		if Settings["General"]["Debug"] then
 			Debug("Effect added: " .. effectName .. " | Effect Icon: " .. effect:GetIcon());
+		end
+
+		if effectName == "Immunity" then
+			self.SkillBar:TriggerCooldown("Brand", 60);
+		end
+
+		if effectName == "Critical Response" then
+			if self.criticalResponse == false then
+				self.criticalResponse = true;
+				self:ResponseSkillManagement();
+			end
+		end
+
+		if effectName == "Enemy Defeat Response" then
+			self.SkillBar:ToggleActive("Rallying Howl", true);
+		end
+
+		if effectName == "March!" then
+			self.SkillBar:ToggleActive("Stealth", false);
+			self.SkillBar:ToggleActive("Disappear", false);
 		end
 
 		if self.BuffEffects[effectName] then
@@ -126,8 +173,24 @@ function RunekeeperAuras:ConfigureCallbacks()
 		if effect ~= nil then 
 			local effectName = effect:GetName();
 
+			
+
 			if self.ProcTable[effectName] and effect:GetID() == self.EffectIDs[effectName] then
 				self.ProcBar:SetInactive(effectName);
+			end
+
+			if effectName == "March!" and not player:IsInCombat() then
+				self.SkillBar:ToggleActive("Stealth", true);
+				self.SkillBar:ToggleActive("Disappear", true);
+			end
+
+			if effectName == "Critical Response" and effect:GetID() == self.EffectIDs[effectName] then
+				self.criticalResponse = false;
+				self:ResponseSkillManagement();
+			end
+
+			if effectName == "Enemy Defeat Response" and effect:GetID() == self.EffectIDs[effectName] then
+				self.SkillBar:ToggleActive("Rallying Howl", false);
 			end
 
 			if self.BuffEffects[effectName] and effect:GetID() == self.EffectIDs[effectName] then
@@ -142,61 +205,45 @@ function RunekeeperAuras:ConfigureCallbacks()
 		end
 	end);
 
-	self.staticSurge = nil;
-	self.staticSurgeUsable = nil;
-	if playerRole == 3 then
-		for i = 1, skillList:GetCount(), 1 do
-			local item = skillList:GetItem(i);
-			local name = item:GetSkillInfo():GetName();
+	for i = 1, skillList:GetCount(), 1 do
+		local item = skillList:GetItem(i);
+		local name = item:GetSkillInfo():GetName();
 		
-			if name == "Static Surge" then
-				self.staticSurge = item;
-			end
+		self.Callbacks[name] = {}
+
+		if self.Skills[name] then
+			self.SkillsTable[name] = item
+			table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+				self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+			end));
 		end
 	end
 
-	if Settings["General"]["ShowSkills"] then
-		for i = 1, skillList:GetCount(), 1 do
-			local item = skillList:GetItem(i);
-			local name = item:GetSkillInfo():GetName();
-		
-			self.Callbacks[name] = {}
-
-			if self.Skills[name] then
-				self.SkillsTable[name] = item
-
-				if self.staticSurge ~= nil then
-					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-						self.SkillBar:ToggleActive("Static Surge", self.staticSurge:IsUsable());
-					end));
-				else
-					table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
-						self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
-					end));
-				end
-			end
-		end
-	end
-
-	self.AttunementCallback = AddCallback(playerAttributes, "AttunementChanged", function(sender, args)
-		self:AttunementManagement(playerAttributes:GetAttunement());
+	self.PowerCallback = AddCallback(player, "PowerChanged", function(sender, args)
+		self:PowerManagement(player:GetPower());
 	end);
+
+	self.CombatCallback = AddCallback(player, "InCombatChanged", function(sender, args)
+		self.SkillBar:ToggleActive("Stealth", not player:IsInCombat());
+	end);
+
+	self.SkillBar:ToggleActive("Stealth", not player:IsInCombat());
+	self.SkillBar:ToggleActive("Disappear", true);
 end
 
-function RunekeeperAuras:RemoveCallbacks()
+function StalkerAuras:RemoveCallbacks()
 	RemoveCallback(playerEffects, "EffectAdded", self.effectAddedCallback);
 	RemoveCallback(playerEffects, "EffectRemoved", self.effectRemovedCallback);
-	RemoveCallback(playerAttributes, "AttunementChanged", self.AttunementCallback);
+	RemoveCallback(playerAttributes, "PowerChanged", self.PowerCallback);
+	RemoveCallback(player, "InCombatChanged", self.CombatCallback);
 	for key, value in pairs(self.Callbacks) do
         for _, callback in pairs(value) do
             RemoveCallback(self.SkillsTable[key], "ResetTimeChanged", callback);
         end
     end
-	self.staticSurge = nil;
 	self.ProcBar:Unload();
 	self.SkillBar:Unload();
-	self.attunement:Unload();
+	self.Power:Unload();
 	self.SkillsTable = {};
 	self.Callbacks = {};
 	self.EffectIDs = {};
@@ -204,11 +251,11 @@ function RunekeeperAuras:RemoveCallbacks()
 	collectgarbage()
 end
 
-function RunekeeperAuras:Unload()
+function StalkerAuras:Unload()
 	self:RemoveCallbacks();
 end
 
-function RunekeeperAuras:SavePosition()
+function StalkerAuras:SavePosition()
 	local screenWidth, screenHeight = Turbine.UI.Display:GetSize();
 	Data = {
 		[1] = self:GetLeft()/screenWidth,
@@ -218,7 +265,7 @@ function RunekeeperAuras:SavePosition()
 	Settings["General"]["Position"] = Data;
 end
 
-function RunekeeperAuras:Reload()
+function StalkerAuras:Reload()
 	skillList = player:GetTrainedSkills();
 	self:RemoveCallbacks();
 	self:ConfigureBars();

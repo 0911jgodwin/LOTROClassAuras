@@ -11,7 +11,29 @@ function ConfigureDefaultSettings()
 		},
 		["Debug"] = false,
 		["ShowSkills"] = true,
+		["TimerFontSize"] = 0.3;
+		["BuffIconSize"] = 32;
 	};
+
+	if playerClass ~= Turbine.Gameplay.Class.Captain then
+			settings["General"]["Resource"] = {
+				["FontSize"] = 0.35,
+				["Height"] = 6,
+			};
+			settings["General"]["YPositions"] = {
+				["Resource"] = 42,
+				["SkillBar"] = 54,
+			};
+	else
+		settings["General"]["Resource"] = {
+			["FontSize"] = 0.35,
+			["Height"] = 8,
+		};
+		settings["General"]["YPositions"] = {
+			["Resource"] = 42,
+			["SkillBar"] = 60,
+		};
+	end
 	if playerClass == Turbine.Gameplay.Class.Beorning then
 		settings["Class"] = ConfigureBeorningSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Brawler then
@@ -34,6 +56,8 @@ function ConfigureDefaultSettings()
 		settings["Class"] = ConfigureRunekeeperSettings();
 	elseif playerClass == Turbine.Gameplay.Class.Warden then
 
+	elseif playerClass == Turbine.Gameplay.Class.Stalker then
+		settings["Class"] = ConfigureStalkerSettings();
 	end
 	
 	return settings;
@@ -93,6 +117,12 @@ function ConfigureBeorningSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
@@ -297,6 +327,12 @@ function ConfigureBrawlerSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
@@ -442,6 +478,12 @@ function ConfigureCaptainSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
@@ -596,6 +638,12 @@ function ConfigureChampionSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
@@ -735,15 +783,16 @@ function ConfigureGuardianSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
-	local BlueRowInfo = {
-		[1] = 38,
-		[2] = 32,
-		[3] = 32,
-		[4] = 38,
-	};
+	local BlueRowInfo = CopyTable(SharedRowInfo);
 	--Red row-info settings
 	local RedRowInfo = CopyTable(SharedRowInfo);
 	--Yellow row-info settings
@@ -909,6 +958,12 @@ function ConfigureHunterSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
@@ -1055,6 +1110,12 @@ function ConfigureRunekeeperSettings()
 		[1] = 38,
 		[2] = 32,
 		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
 	};
 
 	--Blue row-info settings
@@ -1180,6 +1241,95 @@ function ConfigureRunekeeperSettings()
 		[1] = BlueData,
 		[2] = RedData,
 		[3] = YellowData,
+	};
+
+	return Data;
+end
+
+function ConfigureStalkerSettings()
+
+	--Shared buffs that all lines are interested in
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = <image ID>
+	local SharedBuffTable = {
+		["Sprint"] = 1090555737,
+	};
+
+	--Blue-only buffs
+	local BlueBuffs = CopyTable(SharedBuffTable);
+	
+	--Data required for additional entries to this table:
+	--[<Effect Name>] = {<image ID>, <priority>, <stack number>}
+	--Blue-only procs
+	local BlueProcs = {
+		["March!"] = {"ExoPlugins/Auras/Resources/Stalker/March!.tga", 0, 0},
+		["Immunity"] = {1091423617, 1, 0},
+		["Enemy Defeat Response"] = {"ExoPlugins/Auras/Resources/Stalker/DefeatResponse.tga", 2, 0},
+	};
+
+	--This table basically just holds the icon size information for each row.
+	--If you want to make a particular row of quickslots large just adjust the value for the given row index
+	local SharedRowInfo = {
+		[1] = 38,
+		[2] = 32,
+		[3] = 38,
+		[4] = 38,
+		[5] = 38,
+		[6] = 38,
+		[7] = 38,
+		[8] = 38,
+		[9] = 38,
+	};
+
+	--Blue row-info settings
+	local BlueRowInfo = CopyTable(SharedRowInfo);
+
+
+	--Shared Skill List
+	--Data required for additional entries to these tables:
+	--[<Skill Name>] = {<image>, <x position>, <y position>, <responsive>, <visible off CD>}
+	--Responsive skills are those that are not always available, they may require you to progress through a skill chain to unlock
+	--for example in order to unlock Retaliation on Guardian you need a parry response effect to be active, therefore Retaliation is responsive.
+	local SharedSkills = {
+		["Claws"] = {"ExoPlugins/Auras/Resources/Stalker/Claws.tga", 1, 1, false, true},
+		["Rend Flesh"] = {"ExoPlugins/Auras/Resources/Stalker/RendFlesh.tga", 2, 1, true, true},
+		["Eye Rake"] = {"ExoPlugins/Auras/Resources/Stalker/EyeRake.tga", 3, 1, false, true},
+		["Maul"] = {"ExoPlugins/Auras/Resources/Stalker/Maul.tga", 4, 1, false, true},		
+		["Stealth"] = {"ExoPlugins/Auras/Resources/Stalker/Stealth.tga", 5, 1, true, true},
+		["Piercing Claws"] = {"ExoPlugins/Auras/Resources/Stalker/PiercingClaws.tga", 6, 1, false, true},
+		["Pack Hunters"] = {"ExoPlugins/Auras/Resources/Stalker/PackHunters.tga", 7, 1, false, true},
+		["Pounce"] = {"ExoPlugins/Auras/Resources/Stalker/Pounce.tga", 8, 1, false, true},
+
+		["Throat Rip"] = {"ExoPlugins/Auras/Resources/Stalker/ThroatRip.tga", 1, 2, false, true},
+		["Savage Fangs"] = {"ExoPlugins/Auras/Resources/Stalker/ShadowFangs.tga", 2, 2, false, true},
+		["Crippling Bite"] = {"ExoPlugins/Auras/Resources/Stalker/CripplingBite.tga", 3, 2, false, true},
+		["Dire Howl"] = {"ExoPlugins/Auras/Resources/Stalker/DireHowl.tga", 4, 2, false, true},
+		["Rallying Howl"] = {"ExoPlugins/Auras/Resources/Stalker/RallyingHowl.tga", 5, 2, true, true},
+
+		["Sprint"] = {"ExoPlugins/Auras/Resources/Stalker/Sprint.tga", 1, 4, false, true},
+		["Disappear"] = {"ExoPlugins/Auras/Resources/Stalker/Disappear.tga", 2, 4, true, true},
+		["Tendon Shred"] = {"ExoPlugins/Auras/Resources/Stalker/TendonShred.tga", 3, 4, false, true},
+
+		["Brand"] = {"ExoPlugins/Auras/Resources/Stalker/Brand.tga", 1, 5, false, false},
+	};
+
+	--Blue-only skils
+	local BlueSkills = CopyTable(SharedSkills);
+
+
+
+	local BlueData = {
+		["Procs"] = BlueProcs,
+		["Skills"] = {
+			["RowInfo"] = BlueRowInfo,
+			["SkillData"] = BlueSkills,
+		};
+		["Buffs"] = BlueBuffs,
+	};
+
+
+	local Data = {
+		[1] = BlueData,
 	};
 
 	return Data;

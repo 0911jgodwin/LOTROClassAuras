@@ -114,9 +114,9 @@ function GuardianAuras:ConfigureBars()
 	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 51);
+	self.SkillBar:SetPosition(0, Settings["General"]["YPositions"]["SkillBar"]);
 
-	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, 32);
+	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, Settings["General"]["BuffIconSize"]);
 	self.BuffsBar:SetPosition(Settings["General"]["Buffs"]["Position"][1]*screenWidth, Settings["General"]["Buffs"]["Position"][2]*screenHeight);
 	self.BuffDragBar = DragBar( self.BuffsBar, "Buffs" );
 
@@ -125,15 +125,15 @@ function GuardianAuras:ConfigureBars()
 	end
 
 	for key, value in pairs(self.BuffEffects) do
-		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, 32, value, 0));
+		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, Settings["General"]["BuffIconSize"], value, 0));
 	end
 
 	if playerRole == 1 then
 		self.colours = {
 			[0] = Turbine.UI.Color(0.23, 0.12, 0.77),
 			};
-		self.fortBar = ResourceBar(self, width, 24, 5, self.colours);
-		self.fortBar:SetPosition(0, 35);
+		self.fortBar = ResourceBar(self, width, Settings["General"]["Resource"]["Height"], 5, self.colours, Settings["General"]["Resource"]["FontSize"]);
+		self.fortBar:SetPosition(0, Settings["General"]["YPositions"]["Resource"]);
 		self.fortBar:SetTotal(0);
 		self.lastTier = "";
 	end

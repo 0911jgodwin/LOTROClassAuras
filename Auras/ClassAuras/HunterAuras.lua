@@ -83,9 +83,9 @@ function HunterAuras:ConfigureBars()
 	self.ProcBar=EffectBar(self, width, 50, Turbine.UI.ContentAlignment.MiddleCenter, 38);
 	self.ProcBar:SetPosition(0, 0);
 	self.SkillBar = SkillBar(self, width, 200, self.RowInfo, rowCount, Turbine.Turbine.UI.ContentAlignment.MiddleCenter);
-	self.SkillBar:SetPosition(0, 51);
+	self.SkillBar:SetPosition(0, Settings["General"]["YPositions"]["SkillBar"]);
 
-	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, 32);
+	self.BuffsBar = _G.EffectWindow( self:GetParent(), 256, 64, Turbine.UI.ContentAlignment.MiddleRight, Settings["General"]["BuffIconSize"]);
 	self.BuffsBar:SetPosition(Settings["General"]["Buffs"]["Position"][1]*screenWidth, Settings["General"]["Buffs"]["Position"][2]*screenHeight);
 	self.BuffDragBar = DragBar( self.BuffsBar, "Buffs" );
 
@@ -94,7 +94,7 @@ function HunterAuras:ConfigureBars()
 	end
 
 	for key, value in pairs(self.BuffEffects) do
-		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, 32, value, 0));
+		self.BuffsBar:AddEffect(key, Effect(self.BuffsBar, Settings["General"]["BuffIconSize"], value, 0));
 	end
 
 	self.ProcBar:AddEffect("Penetrating Shot", Effect(self.ProcBar, self.ProcBar:GetIconSize(), 1090553933, 0), 0);
@@ -104,8 +104,8 @@ function HunterAuras:ConfigureBars()
 		[0] = Turbine.UI.Color(1.00, 0.96, 0.41),
 		[9] = Turbine.UI.Color(0.77, 0.12, 0.23),
 	};
-	self.focus = ResourceBar(self, width, 24, 9, self.colours);
-	self.focus:SetPosition(0, 35);
+	self.focus = ResourceBar(self, width, Settings["General"]["Resource"]["Height"], 9, self.colours, Settings["General"]["Resource"]["FontSize"]);
+	self.focus:SetPosition(0, Settings["General"]["YPositions"]["Resource"]);
 	self.focus:SetTotal(playerAttributes:GetFocus());
 
 	if Settings["General"]["ShowSkills"] then
@@ -213,6 +213,11 @@ function HunterAuras:ConfigureCallbacks()
 					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
 					self.SkillBar:ToggleActive("Exsanguinate", self.exsanguinate:IsUsable(), 8);
 				end));
+			elseif name == "Barbed Arrow" then
+				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
+					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
+					self.ProcBar:SetActive("Barbed Arrow", 12);
+				end));
 			else
 				table.insert(self.Callbacks[name], AddCallback(item, "ResetTimeChanged", function(sender, args) 
 					self.SkillBar:TriggerCooldown(name, item:GetResetTime() - Turbine.Engine.GetGameTime(), item:GetCooldown())
@@ -224,12 +229,25 @@ function HunterAuras:ConfigureCallbacks()
 	self.FocusCallback = AddCallback(playerAttributes, "FocusChanged", function(sender, args)
 		self:FocusManagement(playerAttributes:GetFocus());
 	end);
+
+	self.ChatListener = function(f, args)
+		if args ~= nil then
+			if args.ChatType == Turbine.ChatType.PlayerCombat then
+				local source,_,skillName,target,_ = string.match(string.gsub(string.gsub(args["Message"],"<rgb=#......>(.*)</rgb>","%1"),"^%s*(.-)%s*$", "%1"),"^(.*) scored a (.*)hit with (.*) on (.*) for (.-) (.*)%.$")
+				if skillName == "Improved Penetrating Shot" then
+					self.ProcBar:SetActive("Penetrating Shot", 10);
+				end
+			end
+		end
+	end
+	AddCallback(ChatHandler, "Received", self.ChatListener);
 end
 
 function HunterAuras:RemoveCallbacks()
 	RemoveCallback(playerEffects, "EffectAdded", self.effectAddedCallback);
 	RemoveCallback(playerEffects, "EffectRemoved", self.effectRemovedCallback);
 	RemoveCallback(playerAttributes, "FocusChanged", self.FocusCallback);
+	RemoveCallback(ChatHandler, "Received", self.ChatListener);
 	for key, value in pairs(self.Callbacks) do
         for _, callback in pairs(value) do
             RemoveCallback(self.SkillsTable[key], "ResetTimeChanged", callback);
